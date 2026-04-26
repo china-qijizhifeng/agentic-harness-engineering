@@ -35,12 +35,36 @@ uv sync
 
 ```bash
 cp .env.example .env
-# Edit .env. At minimum, set:
-#   LLM_API_KEY     API key for the main LLM
-#   E2B_API_KEY     E2B sandbox
-#   GITHUB_TOKEN    for private deps + internal harbor operations
-#   SERPER_API_KEY  web search (used by evolve_agent)
 ```
+
+Edit `.env`. At minimum, set:
+
+| Variable | Purpose |
+|---|---|
+| `LLM_API_KEY` / `LLM_BASE_URL` | Main LLM endpoint (`code_agent` and `evolve_agent` both consume it) |
+| `E2B_API_KEY` | E2B sandbox — see the next subsection for SaaS vs. self-hosted |
+| `GITHUB_TOKEN` | Required for private deps (`NexAU`, `harbor-LJH`) and internal harbor operations |
+| `SERPER_API_KEY` | Web search used by `evolve_agent` |
+
+`ADB_LLM_*` and `GPT54_LLM_*` are optional — leave them unset to fall back to `LLM_*`, or set them to point ADB / the gpt-5.4 experiment at a stronger model. `LANGFUSE_*`, `BP_HTML_PARSER_*`, and `FEISHU_WEBHOOK` are all optional observability / convenience hooks; see `.env.example` for the full list.
+
+#### E2B sandbox: SaaS vs. self-hosted
+
+AHE runs every rollout inside an E2B sandbox. Two deployment modes are supported:
+
+- **SaaS E2B (default).** Set **only** `E2B_API_KEY` and leave `E2B_API_URL` / `E2B_DOMAIN` unset (or commented out). The SDK talks to `e2b.dev` automatically.
+
+  > ⚠️ **Concurrency cap.** SaaS E2B enforces a per-account **concurrent sandbox limit** tied to your tier. If harbor tries to spawn more sandboxes than the cap allows, the extra sandboxes fail to start and the iteration stalls. Before raising parallelism in your harbor / experiment config, check your tier's quota and stay safely under it.
+
+- **Self-hosted E2B cluster.** Set `E2B_API_KEY` **and** point the SDK at your cluster:
+
+  ```dotenv
+  E2B_API_KEY="your_e2b_key"
+  E2B_API_URL="https://your-e2b-host.example.com"
+  E2B_DOMAIN="your-e2b-host.example.com"
+  ```
+
+  No shared concurrency cap applies, but the cluster's hardware capacity still does.
 
 ### 3. Launch
 
