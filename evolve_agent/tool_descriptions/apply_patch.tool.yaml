@@ -1,0 +1,38 @@
+type: tool
+name: apply_patch
+disable_parallel: true
+description: >-
+  Apply a V4A-style patch with Lark grammar to one or more files.
+  This tool accepts the full patch text in the official apply_patch format.
+
+  Patch envelope:
+  *** Begin Patch
+  [ one or more file sections ]
+  *** End Patch
+
+  Supported file operations:
+  - *** Add File: <path>
+  - *** Delete File: <path>
+  - *** Update File: <path>
+  - Optional rename after Update File via *** Move to: <new path>
+
+  Update hunks use @@ markers and lines prefixed with space, +, or -.
+
+  Important rules:
+  - File paths must be relative, never absolute.
+  - New-file content lines must start with +.
+  - Prefer a few lines of surrounding context for each edit.
+  - This tool is intended for multi-file or structured diff edits; use replace
+    for small single-snippet replacements.
+input_schema:
+  type: object
+  properties:
+    input:
+      type: string
+      description: >-
+        The complete apply_patch body, including *** Begin Patch and
+        *** End Patch markers.
+  required:
+    - input
+  additionalProperties: false
+  $schema: http://json-schema.org/draft-07/schema#

@@ -1,0 +1,28 @@
+type: tool
+name: complete_task
+description: >-
+  Call this tool to submit your final answer and complete the task.
+
+  This is the ONLY way to finish a task. You MUST call this tool when your work
+  is done.
+
+  Important:
+  - Always provide comprehensive results in the 'result' argument
+  - Ensure your findings follow any formatting requested in the instructions
+  - Do not call any other tools after calling complete_task
+  - Failure to call this tool will result in a protocol violation
+
+  If your investigation was interrupted (e.g., by timeout or turn limit),
+  explain what you were able to accomplish and what remains incomplete.
+input_schema:
+  type: object
+  properties:
+    result:
+      type: string
+      description: >-
+        Your final results or findings to return. Ensure this is comprehensive
+        and follows any formatting requested in your instructions.
+  required:
+    - result
+  additionalProperties: false
+  $schema: http://json-schema.org/draft-07/schema#

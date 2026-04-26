@@ -1,0 +1,132 @@
+# Agentic Harness Engineering 公共默认配置
+# 实验 overlay 通过 _base 字段继承此文件，只需声明差异部分
+
+# ---- 数据源（path 与 dataset 二选一；详见 README「数据集配置」）----
+# path:    本地数据集目录，相对 AHE 根目录或绝对路径均可
+# dataset: harbor 内置数据集引用，如 "terminal-bench@2.0"
+#path: "./dataset/terminal-bench-2"            # 示例；请按本地环境修改
+dataset: "terminal-bench@2.0"               # 或改用 harbor 内置数据集
+
+target_pass_rate: 0.95
+max_iterations: 100
+
+# 超时控制（单位：分钟，0 表示不限制）
+harbor_job_timeout_minutes: 0    # 单次 harbor 评测超时
+experiment_timeout_minutes: 0    # 整个实验总时长超时
+
+# LLM 配置：统一管理 api_key / base_url / model
+# code_agent 和 harbor 都从这里读取，通过环境变量传递给 ${env.LLM_*}
+# 请在实验 overlay 或 .env 中设置实际值，不要在此处硬编码
+llm:
+  api_key: "${LLM_API_KEY}"
+  base_url: "${LLM_BASE_URL}"
+  model: "gpt-5.4"
+
+harbor:
+  agent: "nexau"
+  env: "e2b"
+  k: 2                                  # 每个 task 的 rollout 次数
+  n_concurrent: 64
+  force_build: false
+  e2b_sandbox_timeout: 3600            # E2B 沙箱最大存活时间（秒），覆盖 .env 中的 E2B_SANDBOX_TIMEOUT
+
+source_config_dir: "code_agent"
+agent_config_filename: "code_agent.yaml"
+
+# Best-of-N: each iteration spawns N evolve agents with different strategy
+# constraints, evaluates all variants in parallel, and adopts the best one.
+# Next iteration's evolve agent sees cross-variant comparison to learn from both.
+best_of_n:
+  enabled: false
+  n: 2
+  strategy_hints:
+    - "You MUST focus on STRUCTURAL changes: middleware, tool implementations, or sub-agents. Do NOT modify system prompt or skill content this iteration."
+    - "You MUST focus on GUIDANCE changes: system prompt rules, skill packages, tool descriptions, or LongTermMEMORY. Do NOT create or modify middleware Python files this iteration."
+
+# 对 code_agent.yaml 的运行时 patch（不同模型需要不同的 tool_call_mode / api_type）
+code_agent_patch:
+  llm_config:
+    stream: true
+
+# evolve agent 的 patch，格式与 code_agent_patch 一致（按 evolve_agent.yaml 结构覆盖）
+# llm_config 中的 api_key/base_url/model 不指定则 fallback 到顶层 llm
+evolve_agent:
+  llm_config:
+    stream: true
+
+# explore-agent 的 patch（deep merge 到各 sub-agent 的 agent.yaml）
+# 未显式指定时自动从 evolve_agent 继承 api_type / reasoning / tool_call_mode
+explore_agent_patch:
+  llm_config:
+    stream: true
+
+# 飞书通知：iteration 完成、目标达成、实验超时/结束时推送消息
+# 在飞书群聊中添加「自定义机器人」，将 webhook 地址填入下方
+notify:
+  enabled: true
+  feishu_webhook: "${FEISHU_WEBHOOK}"   # https://open.feishu.cn/open-apis/bot/v2/hook/xxxxx
+
+# Explore-Agent：实验开始前自动探索源码和文档，为 evolve agent 生成知识 skill
+# 与 iteration 1 的 harbor eval 并行执行，零额外时间成本
+explore_agent:
+  enabled: true
+  model: null                          # 使用的 LLM 模型，null 则继承 evolve_agent 的模型
+  timeout_minutes: 60
+                    # explore-agent 超时（超时则使用已有 skill 继续）
+
+  # 知识来源：源码仓库（source_agent 用于探索框架内部机制）
+  code_sources:
+    nexau:
+      type: git
+      url: "https://github.com/nex-agi/NexAU.git"
+      ref: "v0.3.9"
+      local_fallback: "../nexau"       # 如果本地已有，优先使用（跳过 clone）
+
+  # 知识来源：预给定 Web 页面（explore-agent 必须阅读）
+  # 分为两类：环境文档 + 顶尖 coding agent 设计调研
+  web_sources:
+    # ── E2B 环境文档 ──
+    - url: "https://e2b.dev/docs/sandbox/overview"
+      focus: "E2B sandbox 生命周期、预装软件、资源限制"
+    - url: "https://e2b.dev/docs/sandbox/api"
+      focus: "sandbox API：文件操作、进程管理、网络"
+
+    # ── Terminal Bench 顶尖团队架构调研（重点阅读，提取所有技术细节） ──
+    - url: "https://blog.langchain.dev/how-we-built-the-1-agent-on-terminal-bench/"
+      focus: "LangChain deepagents 架构详解：multi-agent、context 管理、tool 设计，52.8%→66.5% 的每个改进步骤和消融数据"
+    - url: "https://humanlayer.dev/blog/building-coding-agents"
+      focus: "HumanLayer harness 设计详解：context 优化策略、hook vs prompt、harness 层优化 vs agent 层优化的区分"
+    - url: "https://www.anthropic.com/engineering/claude-code-best-practices"
+      focus: "Claude Code 最佳实践详解：skill 系统、compaction 策略、hook 设计、prompt 结构、tool 调用模式"
+    - url: "https://www.anthropic.com/engineering/swe-bench-sonnet"
+      focus: "Anthropic SWE-bench 技术报告：agent 架构、搜索策略、编辑方法、消融实验结果"
+    - url: "https://docs.all-hands.dev/modules/usage/architecture"
+      focus: "OpenHands/OpenDevin 架构：event stream、AgentController、sandbox 集成、多 agent 协调"
+    - url: "https://aider.chat/docs/leaderboards/"
+      focus: "Aider 排行榜：不同 LLM 在 coding benchmark 上的得分对比、edit format 影响"
+    - url: "https://www.cognition.ai/blog/devin-terminal-bench"
+      focus: "Devin Terminal Bench 结果和架构设计：长时间任务处理、环境管理、多步推理"
+    - url: "https://terminal-bench.com"
+      focus: "Terminal Bench 官方页面：最新排行榜、评测方法、任务分类"
+
+# Agent Debugger：在 evolve 前用 adb ask 对轨迹做 LLM 分析
+# 结果注入 evolution query §4，帮助 evolve agent 精准定位失败根因
+agent_debugger:
+  enabled: true
+  max_concurrent: 16            # 并行 adb ask 进程数（1 个 task = 1 个进程，含该 task 所有 rollout 轨迹）
+  max_tasks: 90                  # 最多分析几个 task（debug 优先，summary 排后）
+  timeout_per_task: 600          # 单个 task 的 adb ask 超时（秒），含 QA agent 多轮对话
+  retry_attempts: 3              # 每个 task 内 adb ask 失败时的重试次数（含首次）
+  retry_backoff_seconds: 2.0     # 首次重试前等待秒数，之后指数翻倍（与 NexAU LLMCaller 类似）
+
+  # 可选：为 adb 指定独立 LLM，不指定则复用 LLM_* 环境变量
+  llm:
+    api_key: "${ADB_LLM_API_KEY}"
+    base_url: "${ADB_LLM_BASE_URL}"
+    model: "gpt-5.4"
+
+post_evolve:
+  enabled: false
+  datasets:
+    - name: "swebench-verified"
+      n_concurrent: 24

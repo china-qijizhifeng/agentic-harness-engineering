@@ -1,0 +1,29 @@
+[project]
+name = "agentic-harness-engineering"
+version = "0.1.0"
+description = "Agentic Harness Engineering"
+readme = "README.md"
+requires-python = ">=3.13"
+license = { text = "MIT" }
+authors = [
+    { name = "Curry09" },
+]
+dependencies = [
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0",
+    "e2b>=1.0.0",
+    "nexau @ git+https://github.com/nex-agi/NexAU.git@v0.3.9",
+    "harbor @ git+https://github.com/Curry09/harbor-LJH.git",
+]
+
+[project.scripts]
+agentic-harness-engineering = "evolve:main"
+
+[tool.uv]
+constraint-dependencies = ["claude-agent-sdk<0.1.49"]
+
+[tool.setuptools]
+py-modules = ["evolve"]
+
+[tool.setuptools.packages.find]
+include = ["code_agent*"]

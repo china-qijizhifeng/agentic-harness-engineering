@@ -1,0 +1,31 @@
+type: tool
+name: WebSearch
+description: >-
+  - Allows Claude to search the web and use the results to inform responses
+  - Provides up-to-date information for current events and recent data
+  - Returns search result information formatted as search result blocks
+  - Use this tool for accessing information beyond Claude's knowledge cutoff
+  - Searches are performed automatically within a single API call
+
+  Usage notes:
+    - Domain filtering is supported to include or block specific websites
+    - Web search is only available in the US
+    - Account for "Today's date" in <env>. For example, if <env> says "Today's
+      date: 2025-07-01", and the user wants the latest docs, do not use 2024 in
+      the search query. Use 2025.
+skill_description: >-
+  - This is a web search tool, use LoadSkill to understand how to use this tool in details.
+input_schema:
+  type: object
+  properties:
+    query:
+      type: string
+      description: Search query string
+    num_results:
+      type: integer
+      default: 10
+      description: Number of results to return
+  required:
+    - query
+  additionalProperties: false
+  $schema: http://json-schema.org/draft-07/schema#

@@ -1,0 +1,54 @@
+type: agent
+name: ml_agent_web
+max_iterations: 200
+max_context_tokens: 200000
+
+system_prompt: ./prompt.md
+system_prompt_type: jinja
+tool_call_mode: openai
+
+llm_config:
+  model: ${env.EXPLORE_AGENT_MODEL}
+  base_url: ${env.LLM_BASE_URL}
+  api_key: ${env.LLM_API_KEY}
+  max_tokens: 32000
+  temperature: 0.2
+  stream: true
+  api_type: openai_chat_completion
+
+sandbox_config:
+  type: local
+  work_dir: ${env.EXPLORE_AGENT_WORK_DIR}
+
+tools:
+  - name: WebSearch
+    yaml_path: tool_descriptions/WebSearch.tool.yaml
+    binding: nexau.archs.tool.builtin.web_tools:google_web_search
+  - name: WebFetch
+    yaml_path: tool_descriptions/WebFetch.tool.yaml
+    binding: nexau.archs.tool.builtin.web_tools:web_fetch
+  - name: write_file
+    yaml_path: tool_descriptions/write_file.tool.yaml
+    binding: nexau.archs.tool.builtin.file_tools:write_file
+  - name: complete_task
+    yaml_path: tool_descriptions/complete_task.tool.yaml
+    binding: nexau.archs.tool.builtin.session_tools:complete_task
+
+stop_tools: [complete_task]
+
+middlewares:
+  - import: nexau.archs.main_sub.execution.middleware.long_tool_output:LongToolOutputMiddleware
+    params:
+      max_output_chars: 20000
+      head_lines: 100
+      tail_lines: 80
+  - import: nexau.archs.main_sub.execution.middleware.context_compaction:ContextCompactionMiddleware
+    params:
+      max_context_tokens: 200000
+      auto_compact: true
+      threshold: 0.75
+      compaction_strategy: "tool_result_compaction"
+      keep_iterations: 15
+
+tracers:
+  - import: nexau.archs.tracer.adapters.in_memory:InMemoryTracer

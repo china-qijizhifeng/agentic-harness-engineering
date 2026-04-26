@@ -1,0 +1,8 @@
+{
+  "trace_id": "trace_sample",
+  "messages": [
+    {"role": "system", "content": "you are helpful"},
+    {"role": "user", "content": "hi"},
+    {"role": "assistant", "content": "hello"}
+  ]
+}

@@ -1,0 +1,27 @@
+type: tool
+name: RecallSubAgent
+description: >-
+  Recover a finished sub-agent by id when possible.
+
+  Notes:
+  - Primary use: resume a previously finished sub-agent run via `sub_agent_id`.
+  - `sub_agent_name` must match one of the parent agent's configured `sub_agents`.
+  - Use this tool when you want to recover a previously finished sub-agent run.
+input_schema:
+  type: object
+  properties:
+    sub_agent_name:
+      type: string
+      description: Name of the sub-agent to call. Provide the name like deep_research_agent( without sub-agent- prefix).
+    sub_agent_id:
+      type: string
+      description: Identifier to recover a previously finished sub-agent run (its agent_id).
+    message:
+      type: string
+      description: Task/question for the sub-agent.
+  required:
+    - sub_agent_name
+    - sub_agent_id
+    - message
+  additionalProperties: false
+  $schema: http://json-schema.org/draft-07/schema#

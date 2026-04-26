@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent_debugger_core"
+version = "0.0.0"
+description = "Open-source debugger agent: CLI-compatible replacement for the closed adb wheel."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+dependencies = [
+    "nexau @ git+https://github.com/nex-agi/NexAU.git@v0.3.9",
+    "langfuse>=2.0.0",
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0",
+    "requests",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-asyncio"]
+
+[project.scripts]
+adb = "agent_debugger_core.cli.adb:main"
+
+[tool.setuptools.packages.find]
+include = ["agent_debugger_core*"]
+
+[tool.setuptools.package-data]
+"agent_debugger_core" = ["runtime/*.yaml", "runtime/*.md", "runtime/tool_descriptions/*.yaml"]

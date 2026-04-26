@@ -1,0 +1,63 @@
+type: agent
+name: ml_agent_source
+max_iterations: 200
+max_context_tokens: 200000
+
+system_prompt: ./prompt.md
+system_prompt_type: jinja
+tool_call_mode: openai
+
+llm_config:
+  model: ${env.EXPLORE_AGENT_MODEL}
+  base_url: ${env.LLM_BASE_URL}
+  api_key: ${env.LLM_API_KEY}
+  max_tokens: 32000
+  temperature: 0.2
+  stream: true
+  api_type: openai_chat_completion
+
+sandbox_config:
+  type: local
+  work_dir: ${env.EXPLORE_AGENT_WORK_DIR}
+
+tools:
+  - name: read_file
+    yaml_path: tool_descriptions/read_file.tool.yaml
+    binding: nexau.archs.tool.builtin.file_tools:read_file
+  - name: list_directory
+    yaml_path: tool_descriptions/list_directory.tool.yaml
+    binding: nexau.archs.tool.builtin.file_tools:list_directory
+  - name: glob
+    yaml_path: tool_descriptions/Glob.tool.yaml
+    binding: nexau.archs.tool.builtin.file_tools:glob
+  - name: search_file_content
+    yaml_path: tool_descriptions/search_file_content.tool.yaml
+    binding: nexau.archs.tool.builtin.file_tools:search_file_content
+  - name: run_shell_command
+    yaml_path: tool_descriptions/run_shell_command.tool.yaml
+    binding: nexau.archs.tool.builtin.shell_tools:run_shell_command
+  - name: write_file
+    yaml_path: tool_descriptions/write_file.tool.yaml
+    binding: nexau.archs.tool.builtin.file_tools:write_file
+  - name: complete_task
+    yaml_path: tool_descriptions/complete_task.tool.yaml
+    binding: nexau.archs.tool.builtin.session_tools:complete_task
+
+stop_tools: [complete_task]
+
+middlewares:
+  - import: nexau.archs.main_sub.execution.middleware.long_tool_output:LongToolOutputMiddleware
+    params:
+      max_output_chars: 20000
+      head_lines: 100
+      tail_lines: 80
+  - import: nexau.archs.main_sub.execution.middleware.context_compaction:ContextCompactionMiddleware
+    params:
+      max_context_tokens: 200000
+      auto_compact: true
+      threshold: 0.75
+      compaction_strategy: "tool_result_compaction"
+      keep_iterations: 15
+
+tracers:
+  - import: nexau.archs.tracer.adapters.in_memory:InMemoryTracer

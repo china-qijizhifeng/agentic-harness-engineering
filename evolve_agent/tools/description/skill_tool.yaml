@@ -1,0 +1,14 @@
+type: tool
+name: LoadSkill
+description: >-
+  Load a skill from skill folders. If user task is related to a skill, you can use this tool to load the skill for detailed information about the skill.
+input_schema:
+  type: object
+  properties:
+    skill_name:
+      type: string
+      description: The name of the skill to load
+  required:
+    - skill_name
+  additionalProperties: false
+  $schema: http://json-schema.org/draft-07/schema#

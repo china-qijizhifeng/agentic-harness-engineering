@@ -1,0 +1,32 @@
+_base: "./exp-simple-code-gpt54.yaml"
+_name: "dry-run-adb"
+_description: "Task 18 dry-run: validate Phase 2.5a populates variant_adb_overview with new open-source adb"
+_tags: ["dry-run", "adb-replacement"]
+
+# Use terminal-bench-2 directly with a single task subset
+path: "/root/dataset/terminal-bench-2"
+task_names:
+  - "gcode-to-text"
+  - "break-filter-js-from-html"
+
+# Run through iter2 so Phase 2.5a processes iter1 traces + feeds evolve agent
+max_iterations: 2
+target_pass_rate: 0.99
+
+harbor:
+  k: 1
+  n_concurrent: 2
+
+# Disable explore-agent for speed
+explore_agent:
+  enabled: false
+
+agent_debugger:
+  enabled: true
+  max_concurrent: 2
+  max_tasks: 5
+  timeout_per_task: 600
+  retry_attempts: 2
+
+notify:
+  enabled: false

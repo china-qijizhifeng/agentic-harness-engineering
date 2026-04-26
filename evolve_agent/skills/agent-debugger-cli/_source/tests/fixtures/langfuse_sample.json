@@ -1,0 +1,12 @@
+{
+  "id": "lf_trace_01",
+  "observations": [
+    {"type": "GENERATION", "startTime": "2026-04-23T10:00:00Z",
+     "input": [{"role": "system", "content": "s"}, {"role": "user", "content": "u1"}],
+     "output": {"role": "assistant", "content": "a1"}},
+    {"type": "GENERATION", "startTime": "2026-04-23T10:00:10Z",
+     "input": [{"role": "system", "content": "s"}, {"role": "user", "content": "u1"},
+               {"role": "assistant", "content": "a1"}, {"role": "user", "content": "u2"}],
+     "output": {"role": "assistant", "content": "a2"}}
+  ]
+}

@@ -1,0 +1,14 @@
+/experiments/
+.venv/
+.env
+__pycache__/
+*.egg-info/
+*.pyc
+.DS_Store
+uv.lock
+.code_sources/
+jobs/
+auto-exp/
+runs/
+explore_agent/*/_patched_*.yaml
+/adb_runtime/

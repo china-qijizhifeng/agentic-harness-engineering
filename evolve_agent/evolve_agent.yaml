@@ -1,0 +1,79 @@
+type: agent
+name: nexau_evolution_agent
+max_context_tokens: 200000
+system_prompt: ./evolve_prompt.md
+system_prompt_type: jinja
+tool_call_mode: openai
+max_iterations: 500
+
+llm_config:
+  model: ${env.LLM_MODEL}
+  base_url: ${env.LLM_BASE_URL}
+  api_key: ${env.LLM_API_KEY}
+  max_tokens: 32000
+  temperature: 0.7
+  stream: true
+  api_type: openai_chat_completion
+
+
+sandbox_config:
+  type: local
+  work_dir: ${env.EVOLVE_WORK_DIR}
+
+tools:
+  - name: read_file
+    yaml_path: ./tool_descriptions/read_file.tool.yaml
+    binding: tools.file_tools:read_file
+  - name: write_file
+    yaml_path: ./tool_descriptions/write_file.tool.yaml
+    binding: tools.file_tools:write_file
+  - name: replace
+    yaml_path: ./tool_descriptions/replace.tool.yaml
+    binding: tools.file_tools:replace
+  - name: search_file_content
+    yaml_path: ./tool_descriptions/search_file_content.tool.yaml
+    binding: tools.file_tools:search_file_content
+  - name: glob
+    yaml_path: ./tool_descriptions/Glob.tool.yaml
+    binding: tools.file_tools:glob
+  - name: list_directory
+    yaml_path: ./tool_descriptions/list_directory.tool.yaml
+    binding: tools.file_tools:list_directory
+  - name: run_shell_command
+    yaml_path: ./tool_descriptions/run_shell_command.tool.yaml
+    binding: tools.shell_tools:run_shell_command
+  - name: web_search
+    yaml_path: ./tool_descriptions/WebSearch.tool.yaml
+    binding: tools.web_tools:google_web_search
+  - name: web_read
+    yaml_path: ./tool_descriptions/WebFetch.tool.yaml
+    binding: tools.web_tools:web_fetch
+  - name: complete_task
+    yaml_path: ./tool_descriptions/complete_task.tool.yaml
+    binding: tools.session_tools:complete_task
+
+stop_tools: [complete_task]
+
+skills:
+  - ./skills/nexau-evolution-guide
+
+middlewares:
+  - import: middleware.long_tool_output:LongToolOutputMiddleware
+    params:
+      max_output_chars: 10000
+      head_lines: 50
+      tail_lines: 30
+      head_chars: 5000
+      tail_chars: 5000
+      bypass_tool_names:
+        - run_shell_command
+  - import: middleware.context_compaction:ContextCompactionMiddleware
+    params:
+      max_context_tokens: 220000
+      auto_compact: true
+      threshold: 0.75
+      compaction_strategy: "tool_result_compaction"
+      keep_iterations: 10
+
+tracers:
+  - import: nexau.archs.tracer.adapters.in_memory:InMemoryTracer

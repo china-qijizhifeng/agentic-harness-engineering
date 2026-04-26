@@ -1,0 +1,27 @@
+type: tool
+name: write_file
+description: >-
+  Writes content to a specified file in the local filesystem.
+
+  The user has the ability to modify `content`. If modified, this will be stated
+  in the response.
+
+  Usage:
+  - Creates parent directories if they don't exist
+  - Overwrites the file if it already exists
+  - Use this for creating new files or completely replacing file content
+  - For partial edits, use the 'replace' tool instead
+input_schema:
+  type: object
+  properties:
+    file_path:
+      type: string
+      description: The path to the file to write to.
+    content:
+      type: string
+      description: The content to write to the file.
+  required:
+    - file_path
+    - content
+  additionalProperties: false
+  $schema: http://json-schema.org/draft-07/schema#
