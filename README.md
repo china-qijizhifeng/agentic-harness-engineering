@@ -20,7 +20,15 @@
 
 ## 🎯 Overview
 
-**AHE (Agentic Harness Engineering)** is a closed-loop system that uses an agent to automatically evolve a coding agent — **evaluate, analyze, and improve**. Each iteration runs the current `code_agent` against a benchmark via `harbor`, collects failing traces and metrics, and lets `evolve_agent` rewrite the code agent's prompts, tool descriptions, and workflow based on that evidence. The loop continues until a target pass rate or iteration cap is reached.
+**AHE (Agentic Harness Engineering)** is an open **observability system** for automatically evolving the harness around a coding agent. The base model is held fixed; what evolves are the harness components — system prompts, tool descriptions, tool implementations, middleware, skills, sub-agents, and long-term memory.
+
+AHE rests on three observability layers:
+
+- **Component observability** — [**NexAU**](https://github.com/nex-agi/NexAU.git) decomposes the harness into seven orthogonal, file-level components, each git-tracked so every edit is auditable and revertible.
+- **Experience observability** — *Agent Debugger* distills ~10M-token raw traces into layered, sourced reports; the optimizer reads digests by default but can always drill back to any rollout's raw trace.
+- **Decision observability** — *Evolve Agent* proposes evidence-backed edits, predicts their impact, and is automatically falsified by the next iteration's flipped tasks.
+
+Each outer loop runs `evaluate → analyze → improve`: the current harness is benchmarked via `harbor`, the resulting traces are distilled, then *Evolve Agent* rewrites whichever components the evidence points at — until a target pass rate or iteration cap is reached.
 
 ---
 
@@ -125,7 +133,7 @@ The core is an **evaluate → analyze → improve** loop:
 |---|---|
 | `evolve.py` | Main-loop orchestrator |
 | `code_agent_simple/` | The simplified coding agent that is being evaluated and evolved |
-| `evolve_agent/` | The meta-agent that performs the improvement step (built on the NexAU framework) |
+| `evolve_agent/` | The meta-agent that performs the improvement step (built on the [NexAU](https://github.com/nex-agi/NexAU.git) framework) |
 | `explore_agent/` | Upstream dataset / source-code exploration agent |
 | `configs/` | `base.yaml` (shared defaults) + `experiments/` (per-experiment overlays) |
 
