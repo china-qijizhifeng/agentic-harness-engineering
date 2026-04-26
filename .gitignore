@@ -10,5 +10,5 @@ uv.lock
 jobs/
 auto-exp/
 runs/
-explore_agent/*/_patched_*.yaml
+agents/explore_agent/*/_patched_*.yaml
 /adb_runtime/

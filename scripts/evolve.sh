@@ -6,7 +6,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 usage() {
     cat <<'EOF'
-用法: ./evolve.sh [选项] <config_file>
+用法: ./scripts/evolve.sh [选项] <config_file>
 
 在 tmux 后台 session 中启动 Agentic Harness Engineering 进化实验。
 
@@ -24,16 +24,16 @@ usage() {
 
 示例:
   # 启动单个实验
-  ./evolve.sh configs/experiments/exp-003-gpt54.yaml
+  ./scripts/evolve.sh configs/experiments/exp-003-gpt54.yaml
 
   # 恢复中断的实验，从第 16 轮继续
-  ./evolve.sh --experiment 2026-03-13__18-02-54__gpt54 --start-iteration 16 configs/experiments/exp-003-gpt54.yaml
+  ./scripts/evolve.sh --experiment 2026-03-13__18-02-54__gpt54 --start-iteration 16 configs/experiments/exp-003-gpt54.yaml
 
   # 批量启动所有实验
-  ./evolve.sh --batch
+  ./scripts/evolve.sh --batch
 
   # 启动后自动 attach
-  ./evolve.sh --attach configs/experiments/exp-003-gpt54.yaml
+  ./scripts/evolve.sh --attach configs/experiments/exp-003-gpt54.yaml
 
 管理 tmux session:
   tmux ls                          # 查看所有 session
@@ -98,7 +98,7 @@ if $BATCH_MODE; then
             continue
         fi
 
-        cmd="cd '$SCRIPT_DIR' && uv run python evolve.py --config '$cfg'"
+        cmd="cd '$PROJECT_ROOT' && uv run python evolve.py --config '$cfg'"
         tmux new-session -d -s "$sess" "$cmd"
         echo "[启动] $name -> tmux session '$sess'"
         ((count++))
@@ -144,7 +144,7 @@ if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
     exit 1
 fi
 
-CMD="cd '$SCRIPT_DIR' && uv run python evolve.py --config '$CONFIG_FILE'"
+CMD="cd '$PROJECT_ROOT' && uv run python evolve.py --config '$CONFIG_FILE'"
 
 if [[ -n "$EXPERIMENT" ]]; then
     CMD="$CMD --experiment '$EXPERIMENT'"

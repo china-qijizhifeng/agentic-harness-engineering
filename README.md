@@ -98,13 +98,13 @@ AHE runs every rollout inside an E2B sandbox. Two deployment modes are supported
 
 ```bash
 # Run a single experiment in the background via tmux
-./evolve.sh configs/experiments/exp-003-simple-code-gpt54.yaml
+./scripts/evolve.sh configs/experiments/exp-003-simple-code-gpt54.yaml
 
 # Launch and auto-attach to the log stream
-./evolve.sh --attach configs/experiments/exp-003-simple-code-gpt54.yaml
+./scripts/evolve.sh --attach configs/experiments/exp-003-simple-code-gpt54.yaml
 
 # Batch: launch every experiment under configs/experiments/
-./evolve.sh --batch
+./scripts/evolve.sh --batch
 ```
 
 Common tmux operations after launch:
@@ -132,27 +132,32 @@ The core is an **evaluate → analyze → improve** loop:
 | Component | Role |
 |---|---|
 | `evolve.py` | Main-loop orchestrator |
-| `code_agent_simple/` | The simplified coding agent that is being evaluated and evolved |
-| `evolve_agent/` | The meta-agent that performs the improvement step (built on the [NexAU](https://github.com/nex-agi/NexAU.git) framework) |
-| `explore_agent/` | Upstream dataset / source-code exploration agent |
+| `agents/code_agent_simple/` | The coding agent that is being evaluated and evolved |
+| `agents/evolve_agent/` | The meta-agent that performs the improvement step (built on the [NexAU](https://github.com/nex-agi/NexAU.git) framework) |
+| `agents/explore_agent/` | Upstream dataset / source-code exploration agent |
 | `configs/` | `base.yaml` (shared defaults) + `experiments/` (per-experiment overlays) |
+| `scripts/` | tmux launcher wrappers (`evolve.sh`, `evolve-resume.sh`) |
 
 ### Directory layout
 
 ```
 agentic-harness-engineering/
 ├── evolve.py                       # main loop
-├── evolve.sh / evolve-resume.sh    # tmux launcher wrappers
-├── code_agent_simple/              # the coding agent under evolution
-├── evolve_agent/                   # the evolution meta-agent
-│   ├── evolve_prompt.md
-│   ├── middleware/                 # context compaction / failover / ralph loop …
-│   ├── skills/                     # agent-debugger-cli / nexau-evolution-guide
-│   └── tools/                      # file / shell / web / session tools
-├── explore_agent/                  # exploration agent
+├── trace_converter.py              # rollout trace → debugger-friendly JSON
+├── agents/
+│   ├── code_agent_simple/          # the coding agent under evolution
+│   ├── evolve_agent/               # the evolution meta-agent
+│   │   ├── evolve_prompt.md
+│   │   ├── middleware/             # context compaction / failover / ralph loop …
+│   │   ├── skills/                 # agent-debugger-cli / nexau-evolution-guide
+│   │   └── tools/                  # file / shell / web / session tools
+│   └── explore_agent/              # exploration agent (sources + web)
 ├── configs/
 │   ├── base.yaml                   # shared defaults
 │   └── experiments/                # one overlay per experiment
+├── scripts/
+│   ├── evolve.sh                   # tmux launcher
+│   └── evolve-resume.sh            # resume helper
 └── .env.example
 ```
 
@@ -201,7 +206,7 @@ The default `path` values in `base.yaml` and `configs/experiments/*.yaml` are **
 | `--start-iteration N` | Start from iteration N (default 1) |
 | `--skip-eval` | Skip evaluation and reuse existing rollouts (for debugging) |
 
-### `./evolve.sh`
+### `./scripts/evolve.sh`
 
 A thin wrapper around `uv run python evolve.py` + tmux.
 
@@ -222,7 +227,7 @@ A thin wrapper around `uv run python evolve.py` + tmux.
 **Resume an interrupted experiment from iteration 16:**
 
 ```bash
-./evolve.sh \
+./scripts/evolve.sh \
   --experiment 2026-04-10__23-20-14__gpt54 \
   --start-iteration 16 \
   configs/experiments/exp-003-simple-code-gpt54.yaml
@@ -231,7 +236,7 @@ A thin wrapper around `uv run python evolve.py` + tmux.
 **Run only evolve_agent without re-running evaluation:**
 
 ```bash
-./evolve.sh \
+./scripts/evolve.sh \
   --experiment <existing-exp-dir> \
   --skip-eval \
   configs/experiments/exp-003-simple-code-gpt54.yaml

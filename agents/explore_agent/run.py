@@ -20,7 +20,7 @@ from pathlib import Path
 
 import yaml
 
-AUTO_DIR = Path(__file__).resolve().parent.parent
+AUTO_DIR = Path(__file__).resolve().parent.parent.parent
 
 ML_SKILL_NAMES = [
     "nexau-framework-internals",
@@ -331,7 +331,7 @@ def run_explore_agent(config: dict, exp_dir: Path) -> bool:
         return False
 
     ml_agent_patch = config.get("explore_agent_patch", {})
-    ml_dir = AUTO_DIR / "explore_agent"
+    ml_dir = AUTO_DIR / "agents" / "explore_agent"
 
     source_base = (ml_dir / "source_agent" / "agent.yaml").resolve()
     web_base = (ml_dir / "web_agent" / "agent.yaml").resolve()

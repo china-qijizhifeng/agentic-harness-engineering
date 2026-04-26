@@ -30,7 +30,7 @@ harbor:
   force_build: false
   e2b_sandbox_timeout: 3600            # E2B 沙箱最大存活时间（秒），覆盖 .env 中的 E2B_SANDBOX_TIMEOUT
 
-source_config_dir: "code_agent"
+source_config_dir: "agents/code_agent_simple"
 agent_config_filename: "code_agent.yaml"
 
 # Best-of-N: each iteration spawns N evolve agents with different strategy

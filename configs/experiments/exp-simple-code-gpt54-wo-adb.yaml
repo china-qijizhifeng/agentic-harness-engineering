@@ -5,7 +5,7 @@ _tags: ["model-comparison", "gpt54", "ablation", "wo-adb"]
 
 # 使用 simple code agent（与 base 的 code_agent 目录区分）
 # source_config_dir 支持相对（相对 AHE 根目录）或绝对路径
-source_config_dir: "code_agent_simple"
+source_config_dir: "agents/code_agent_simple"
 agent_config_filename: "code_agent.yaml"
 
 # 数据源（详见 base.yaml 注释与 README「数据集配置」）

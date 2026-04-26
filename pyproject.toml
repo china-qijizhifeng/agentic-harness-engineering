@@ -26,4 +26,4 @@ constraint-dependencies = ["claude-agent-sdk<0.1.49"]
 py-modules = ["evolve"]
 
 [tool.setuptools.packages.find]
-include = ["code_agent*"]
+include = ["agents*"]

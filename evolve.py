@@ -33,7 +33,7 @@ from dotenv import load_dotenv
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 PROJECT_DIR = Path(__file__).resolve().parent
-EVOLVE_AGENT_DIR = PROJECT_DIR / "evolve_agent"
+EVOLVE_AGENT_DIR = PROJECT_DIR / "agents" / "evolve_agent"
 EXPERIMENTS_DIR = PROJECT_DIR / "experiments"
 
 load_dotenv(PROJECT_DIR / ".env", override=True)
@@ -4065,7 +4065,7 @@ def run_post_evolve(config: dict, exp_dir: Path, workspace_dir: Path,
 
 def _run_explore_agent_standalone(config: dict, exp_dir: Path) -> None:
     """Run explore-agent standalone in skip_eval mode (synchronous)."""
-    from explore_agent.run import run_explore_agent, register_explore_agent_skills
+    from agents.explore_agent.run import run_explore_agent, register_explore_agent_skills
 
     evolve_llm = get_llm_config(config, role="evolve")
     ml_model = config.get("explore_agent", {}).get("model") or evolve_llm["model"]
@@ -4098,7 +4098,7 @@ def _run_harbor_with_explore_agent(
     Evolve agent only starts after both complete (by then explore-agent skills are available).
     """
     from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
-    from explore_agent.run import run_explore_agent, register_explore_agent_skills
+    from agents.explore_agent.run import run_explore_agent, register_explore_agent_skills
 
     ml_timeout = config.get("explore_agent", {}).get("timeout_minutes", 30)
     ml_start_time = time.monotonic()
@@ -4304,7 +4304,7 @@ def run_single_experiment(config: dict, config_path: str, experiment_name: str |
                         skip_eval = False
 
                         if iteration == 1 and ml_enabled:
-                            from explore_agent.run import register_explore_agent_skills, ML_SKILL_NAMES
+                            from agents.explore_agent.run import register_explore_agent_skills, ML_SKILL_NAMES
                             skills_dir = exp_dir / "evolve_agent" / "skills"
                             existing = [s for s in ML_SKILL_NAMES if (skills_dir / s / "SKILL.md").exists()]
                             if existing:
