@@ -1,6 +1,26 @@
-# Agentic Harness Engineering (AHE)
+# Agentic Harness Engineering: Self-Evolving Coding Agents
 
-A closed-loop system that uses an agent to automatically evolve a coding agent — evaluate, analyze, and improve.
+<div align="left">
+
+<p align="left" style="display:flex; gap:18px;">
+  <a href="LICENSE" target="_blank" style="margin-right:0;">
+    <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg">
+  </a>
+  <a href="https://www.python.org/downloads/" target="_blank" style="margin-right:0;">
+    <img alt="Python" src="https://img.shields.io/badge/python-%E2%89%A53.13-blue.svg">
+  </a>
+  <a href="https://docs.astral.sh/uv/" target="_blank" style="margin-right:0;">
+    <img alt="Managed with uv" src="https://img.shields.io/badge/managed_with-uv-261230?logo=python&logoColor=white">
+  </a>
+</p>
+
+</div>
+
+---
+
+## 🎯 Overview
+
+**AHE (Agentic Harness Engineering)** is a closed-loop system that uses an agent to automatically evolve a coding agent — **evaluate, analyze, and improve**. Each iteration runs the current `code_agent` against a benchmark via `harbor`, collects failing traces and metrics, and lets `evolve_agent` rewrite the code agent's prompts, tool descriptions, and workflow based on that evidence. The loop continues until a target pass rate or iteration cap is reached.
 
 ---
 
@@ -90,9 +110,9 @@ tmux kill-session -t <session>  # terminate
 
 ---
 
-## Overview
+## 🔧 How It Works
 
-**AHE** is a system that automatically evolves a coding agent. Its core is an **evaluate → analyze → improve** loop:
+The core is an **evaluate → analyze → improve** loop:
 
 1. **Evaluate**: use `harbor` to run the current agent against the dataset.
 2. **Analyze**: collect failing traces, summaries, and metrics.
