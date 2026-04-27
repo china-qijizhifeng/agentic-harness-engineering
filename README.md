@@ -94,7 +94,28 @@ AHE runs every rollout inside an E2B sandbox. Two deployment modes are supported
 
   No shared concurrency cap applies, but the cluster's hardware capacity still does.
 
-### 3. Launch
+### 3. Build E2B templates (one-time per dataset)
+
+Every rollout runs inside an E2B sandbox spawned from a prebuilt template that already has `uv` and the NexAU/harbor venv at `/opt/nexau-venv`. Build those templates once before launching:
+
+```bash
+# Build every template declared by the dataset, 16 in parallel
+uv run python scripts/build_templates.py --dataset-dir /path/to/dataset -j 16
+
+# Resume after a failure: only retry tasks whose latest E2B build status is ERROR
+uv run python scripts/build_templates.py --dataset-dir /path/to/dataset --retry-failed
+
+# Build a specific subset of tasks
+uv run python scripts/build_templates.py --dataset-dir /path/to/dataset task_a task_b
+```
+
+The dataset directory must contain one subdir per task with a `task.toml` declaring `[environment].docker_image` (or an `environment/Dockerfile` fallback). Each task's template alias is `<task_name>` with `.` replaced by `-`.
+
+The default packages baked into each template come from `scripts/build_templates.py:DEFAULT_NEXAU_PACKAGES` and match the runtime deps in `pyproject.toml`. Override with one or more `--nexau-package <git-or-pip-spec>` flags if you need a different revision in the sandbox than on the host.
+
+If your tasks pull from a private Docker registry, also export `DOCKER_REGISTRY_USERNAME` and `DOCKER_REGISTRY_PASSWORD` before invoking the script.
+
+### 4. Launch
 
 ```bash
 # Run a single experiment in the background via tmux
