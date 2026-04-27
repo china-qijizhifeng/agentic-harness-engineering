@@ -2,3 +2,6 @@ _base: "./exp-simple-code-gpt54.yaml"
 _name: "gpt54-new-adb"
 _description: "GPT-5.4 with open-source adb (post-replacement); paired with wo-adb and (legacy-tagged) closed-wheel runs for three-way ablation"
 _tags: ["model-comparison", "gpt54", "ablation", "new-adb", "open-source-adb"]
+
+# Override base dataset → terminal-bench-2 long-time subset (89 tasks)
+path: "/root/dataset/terminal-bench-2-long-time"
