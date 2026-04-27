@@ -12,3 +12,4 @@ auto-exp/
 runs/
 agents/explore_agent/*/_patched_*.yaml
 /adb_runtime/
+agents/evolve_agent/skills/agent-debugger-cli/*.whl

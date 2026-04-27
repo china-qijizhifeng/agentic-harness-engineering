@@ -1,33 +1,33 @@
 ---
 name: agent-debugger-cli
-description: Install and use the bundled agent debugger CLI wheel to configure adb LLM settings, download Langfuse traces, ask QA questions about traces, and run adb check quality analysis. Use when the task is about agent-debugger CLI workflows, trace debugging, or explaining how adb is configured.
+description: Install and use the bundled agent debugger CLI source to configure adb LLM settings, download Langfuse traces, ask QA questions about traces, and run adb check quality analysis. Use when the task is about agent-debugger CLI workflows, trace debugging, or explaining how adb is configured.
 compatibility: Requires Python 3.9+, pip, local shell access, and optional network access for Langfuse trace download or model calls.
 metadata:
   author: agent-debugger
-  bundled-wheel: agent_debugger_core-0.0.0-py3-none-any.whl
+  bundled-source: _source/
 ---
 
 # Agent Debugger CLI
 
-Use this skill when you need the standalone `adb` CLI that ships inside the bundled wheel in this directory.
+Use this skill when you need the standalone `adb` CLI that ships inside the bundled `_source/` package in this directory.
 
 ## Files in this skill
 
-- `agent_debugger_core-0.0.0-py3-none-any.whl`: bundled wheel that exposes the `adb` command.
+- `_source/`: bundled open-source package that exposes the `adb` command.
 
 ## Install
 
-Run from this skill directory:
+The package is declared as a path source in the project root `pyproject.toml`, so a top-level `uv sync` already installs it. To install standalone from this skill directory:
 
 ```bash
-python -m pip install ./agent_debugger_core-0.0.0-py3-none-any.whl
+python -m pip install ./_source
 adb --help
 ```
 
 If you are upgrading an existing install, use:
 
 ```bash
-python -m pip install --upgrade --force-reinstall ./agent_debugger_core-0.0.0-py3-none-any.whl
+python -m pip install --upgrade --force-reinstall ./_source
 ```
 
 ## LLM configuration
@@ -279,7 +279,7 @@ If a command fails and `--format json` is set, stdout is:
 ## Minimal end-to-end example
 
 ```bash
-python -m pip install ./agent_debugger_core-0.0.0-py3-none-any.whl
+python -m pip install ./_source
 adb config '{"llm":{"model":"gpt-4.1","base_url":"https://api.openai.com/v1","api_key":"<your-key>"}}'
 TRACE_PATH="$(adb download --type langfuse --ak <public-key> --sk <secret-key> https://<langfuse-host>/project/<projectId>/traces/<traceId>)"
 adb ask -t "$TRACE_PATH" -q "Summarize the main issue in this trace."

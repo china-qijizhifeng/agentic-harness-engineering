@@ -1183,18 +1183,18 @@ def _find_adb() -> str | None:
 
 
 def _ensure_adb_installed() -> bool:
-    """Install adb wheel if not already available. Returns True on success."""
+    """Install adb from bundled _source/ if not already available. Returns True on success."""
     global _adb_path
     _adb_path = _find_adb()
     if _adb_path:
         return True
-    whl = EVOLVE_AGENT_DIR / "skills" / "agent-debugger-cli" / "agent_debugger_core-0.0.0-py3-none-any.whl"
-    if not whl.exists():
-        print(f"[adb] wheel not found: {whl}")
+    src = EVOLVE_AGENT_DIR / "skills" / "agent-debugger-cli" / "_source"
+    if not src.is_dir():
+        print(f"[adb] source dir not found: {src}")
         return False
     r = subprocess.run(
-        [sys.executable, "-m", "pip", "install", str(whl)],
-        capture_output=True, text=True, timeout=120,
+        [sys.executable, "-m", "pip", "install", str(src)],
+        capture_output=True, text=True, timeout=180,
     )
     if r.returncode != 0:
         print(f"[adb] pip install failed: {r.stderr[:300]}")
