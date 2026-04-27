@@ -153,6 +153,14 @@ def load_config(config_path: str) -> dict:
             meta[key] = raw.pop(key)
 
     config = deep_merge(base, raw)
+
+    # Mutually-exclusive data-source keys: if the overlay explicitly sets one,
+    # drop the other inherited from base so downstream readers see a single source.
+    if 'path' in raw and 'dataset' in config and 'dataset' not in raw:
+        config.pop('dataset', None)
+    elif 'dataset' in raw and 'path' in config and 'path' not in raw:
+        config.pop('path', None)
+
     config["_meta"] = meta
     return resolve_env_vars(config)
 

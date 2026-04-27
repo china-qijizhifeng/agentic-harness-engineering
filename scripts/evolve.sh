@@ -98,7 +98,7 @@ if $BATCH_MODE; then
             continue
         fi
 
-        cmd="cd '$PROJECT_ROOT' && uv run python evolve.py --config '$cfg'"
+        cmd="export PATH="$HOME/.local/bin:$PATH" && cd '$PROJECT_ROOT' && uv run python evolve.py --config '$cfg'"
         tmux new-session -d -s "$sess" "$cmd"
         echo "[启动] $name -> tmux session '$sess'"
         ((count++))
@@ -144,7 +144,7 @@ if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
     exit 1
 fi
 
-CMD="cd '$PROJECT_ROOT' && uv run python evolve.py --config '$CONFIG_FILE'"
+CMD="export PATH="$HOME/.local/bin:$PATH" && cd '$PROJECT_ROOT' && uv run python evolve.py --config '$CONFIG_FILE'"
 
 if [[ -n "$EXPERIMENT" ]]; then
     CMD="$CMD --experiment '$EXPERIMENT'"
