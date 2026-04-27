@@ -111,7 +111,7 @@ uv run python scripts/build_templates.py --dataset-dir /path/to/dataset task_a t
 
 The dataset directory must contain one subdir per task with a `task.toml` declaring `[environment].docker_image` (or an `environment/Dockerfile` fallback). Each task's template alias is `<task_name>` with `.` replaced by `-`.
 
-The default packages baked into each template come from `scripts/build_templates.py:DEFAULT_NEXAU_PACKAGES` and match the runtime deps in `pyproject.toml`. Override with one or more `--nexau-package <git-or-pip-spec>` flags if you need a different revision in the sandbox than on the host.
+The default packages baked into each template come from `scripts/build_templates.py:DEFAULT_NEXAU_PACKAGES` (a public NexAU + the in-sandbox `NexAU-harbor` variant, intentionally distinct from the host-side `harbor-LJH` in `pyproject.toml`). Override with one or more `--nexau-package <git-or-pip-spec>` flags if you need a different revision in the sandbox.
 
 If your tasks pull from a private Docker registry, also export `DOCKER_REGISTRY_USERNAME` and `DOCKER_REGISTRY_PASSWORD` before invoking the script.
 

@@ -66,12 +66,13 @@ UV_VERSION = ""
 NEXAU_PYTHON = "3.13"
 NEXAU_VENV = "/opt/nexau-venv"
 
-# Default packages installed into the template's nexau venv. Keep these in
-# sync with the runtime deps in pyproject.toml so a sandbox spawned from a
-# template runs the same NexAU/harbor as the host driving evolve.py.
+# Default packages installed into the template's nexau venv. These pin the
+# in-sandbox NexAU + harbor pair; they are intentionally separate from the
+# host-side deps in pyproject.toml (host runs harbor-LJH; the sandbox runs
+# NexAU-harbor, the trimmed harbor variant meant for in-template execution).
 DEFAULT_NEXAU_PACKAGES = [
+    "git+https://github.com/Curry09/NexAU-harbor.git",
     "git+https://github.com/nex-agi/NexAU.git@v0.3.9",
-    "git+https://github.com/Curry09/harbor-LJH.git",
 ]
 
 
