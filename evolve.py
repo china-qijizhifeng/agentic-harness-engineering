@@ -1563,41 +1563,27 @@ def _extract_one_liner(qa_response: str) -> str:
                 return f"{tag} verifier: {summary}"
         return s.split("\n", 1)[0][:100]
 
-    cleaned: list[str] = []
+    # Prefer the full ROOT CAUSE paragraph: the prompt asks adb to lead with
+    # "ROOT CAUSE:" and follow with sibling sections (PASS vs FAIL, CRITICAL
+    # MISTAKE, GENERAL MECHANISM) or a blank line. Capture everything up to
+    # the next such boundary so the overview keeps the full diagnosis.
+    rc = re.search(
+        r"ROOT CAUSE\s*[:：]\s*(.+?)(?=\n\s*\n|\n\s*(?:PASS\s+vs\s+FAIL|CRITICAL\s+MISTAKE|GENERAL\s+MECHANISM)\b|\Z)",
+        s, flags=re.DOTALL | re.IGNORECASE,
+    )
+    if rc:
+        return re.sub(r"\s+", " ", rc.group(1)).strip()
+
+    # Fallback: first non-trivial prose line, no length cap.
     for raw in s.splitlines():
         line = raw.strip()
         if not line or line.startswith("#"):
             continue
-        m = re.match(r"^[-*]\s+", line)
-        if m:
-            line = line[m.end() :].strip()
-        m = re.match(r"^\d+[\.)]\s*", line)
-        if m:
-            line = line[m.end() :].strip()
+        line = re.sub(r"^[-*]\s+", "", line)
+        line = re.sub(r"^\d+[\.)]\s*", "", line)
         if line:
-            cleaned.append(line)
-
-    if not cleaned:
-        flat = re.sub(r"\s+", " ", s).strip()
-        if len(flat) > 100:
-            return flat[:97] + "..."
-        return flat
-
-    primary = cleaned[0]
-    # Section label only (e.g. "ROOT CAUSE") — use the next line of prose
-    if len(primary) <= 40 and not re.search(r"[。．；;，,]", primary) and len(cleaned) > 1:
-        if len(cleaned[1]) > len(primary) + 10:
-            primary = cleaned[1]
-
-    for sep in ("。", ". ", "！", "!", "？", "?"):
-        if sep in primary:
-            primary = primary.split(sep, 1)[0].strip()
-            break
-
-    primary = re.sub(r"\s+", " ", primary).strip()
-    if len(primary) > 100:
-        return primary[:97] + "..."
-    return primary
+            return re.sub(r"\s+", " ", line).strip()
+    return re.sub(r"\s+", " ", s).strip()
 
 
 def _write_debugger_analyse(
