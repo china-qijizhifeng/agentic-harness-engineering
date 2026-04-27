@@ -11,7 +11,7 @@ class BootstrapError(Exception):
 
 
 def _contains_tools_pkg(candidate: Path) -> bool:
-    return (candidate / "evolve_agent" / "tools" / "__init__.py").exists()
+    return (candidate / "agents" / "evolve_agent" / "tools" / "__init__.py").exists()
 
 
 def ensure_tools_importable(*, _skip_self_search: bool = False) -> str:
@@ -22,7 +22,7 @@ def ensure_tools_importable(*, _skip_self_search: bool = False) -> str:
     """
     ahe_home = os.environ.get("AHE_HOME")
     if ahe_home and _contains_tools_pkg(Path(ahe_home)):
-        added = str(Path(ahe_home) / "evolve_agent")
+        added = str(Path(ahe_home) / "agents" / "evolve_agent")
         if added not in sys.path:
             sys.path.insert(0, added)
         return added
@@ -33,7 +33,7 @@ def ensure_tools_importable(*, _skip_self_search: bool = False) -> str:
             if _contains_tools_pkg(parent):
                 # Skip if this file lives inside that candidate's evolve_agent
                 # tree (i.e. we are a dev install inside the repo itself).
-                evolve_dir = parent / "evolve_agent"
+                evolve_dir = parent / "agents" / "evolve_agent"
                 try:
                     here.relative_to(evolve_dir)
                     # We ARE inside evolve_agent - fall through to cwd.
@@ -47,7 +47,7 @@ def ensure_tools_importable(*, _skip_self_search: bool = False) -> str:
 
     cwd = Path.cwd()
     if _contains_tools_pkg(cwd):
-        added = str(cwd / "evolve_agent")
+        added = str(cwd / "agents" / "evolve_agent")
         if added not in sys.path:
             sys.path.insert(0, added)
         return added
