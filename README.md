@@ -28,6 +28,8 @@ AHE rests on three observability layers:
 - **Experience observability** — *Agent Debugger* distills ~10M-token raw traces into layered, sourced reports; the optimizer reads digests by default but can always drill back to any rollout's raw trace.
 - **Decision observability** — *Evolve Agent* proposes evidence-backed edits, predicts their impact, and is automatically falsified by the next iteration's flipped tasks.
 
+> **Note on Agent Debugger licensing.** The current release ships a *partially* open-sourced Agent Debugger; due to company strategy, it cannot be fully open-sourced at this time.
+
 Each outer loop runs `evaluate → analyze → improve`: the current harness is benchmarked via `harbor`, the resulting traces are distilled, then *Evolve Agent* rewrites whichever components the evidence points at — until a target pass rate or iteration cap is reached.
 
 ---
