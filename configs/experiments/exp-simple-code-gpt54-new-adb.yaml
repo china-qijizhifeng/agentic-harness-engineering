@@ -5,3 +5,7 @@ _tags: ["model-comparison", "gpt54", "ablation", "new-adb", "open-source-adb"]
 
 # Override base dataset → terminal-bench-2 long-time subset (89 tasks)
 path: "/root/dataset/terminal-bench-2-long-time"
+
+# Bump concurrency above parent (96) for this run
+harbor:
+  n_concurrent: 128
