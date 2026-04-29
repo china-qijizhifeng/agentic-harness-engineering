@@ -3,13 +3,13 @@
 <div align="left">
 
 <p align="left" style="display:flex; gap:18px;">
-  <a href="LICENSE" target="_blank" style="margin-right:0;">
+  <a href="LICENSE" target="_blank" style="margin-right:0; text-decoration:none;">
     <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg">
   </a>
-  <a href="https://www.python.org/downloads/" target="_blank" style="margin-right:0;">
+  <a href="https://www.python.org/downloads/" target="_blank" style="margin-right:0; text-decoration:none;">
     <img alt="Python" src="https://img.shields.io/badge/python-%E2%89%A53.13-blue.svg">
   </a>
-  <a href="https://docs.astral.sh/uv/" target="_blank" style="margin-right:0;">
+  <a href="https://docs.astral.sh/uv/" target="_blank" style="margin-right:0; text-decoration:none;">
     <img alt="Managed with uv" src="https://img.shields.io/badge/managed_with-uv-261230?logo=python&logoColor=white">
   </a>
 </p>
