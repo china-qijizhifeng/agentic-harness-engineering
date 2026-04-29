@@ -18,6 +18,13 @@
 
 ---
 
+## 📰 News
+
+- **[2026-01-16]** 📄 Paper released on arXiv: [OctoBench: Benchmarking Scaffold-Aware Instruction Following in Repository-Grounded Agentic Coding](https://arxiv.org/abs/2604.25850)
+- **[2026-01]** 🎉 Dataset & Framework released
+
+---
+
 ## 🎯 Overview
 
 **AHE (Agentic Harness Engineering)** is an open **observability system** for automatically evolving the harness around a coding agent. The base model is held fixed; what evolves are the harness components — system prompts, tool descriptions, tool implementations, middleware, skills, sub-agents, and long-term memory.
