@@ -17,11 +17,8 @@
 </div>
 
 <p align="center">
-  <img src="assets/figures/case_study.png" alt="Case Study" width="90%">
-</p>
-
-<p align="center">
-  <img src="assets/figures/training_curve.png" alt="Training Curve" width="80%">
+  <img src="assets/figures/case_study.png" alt="Case Study" width="44%">
+  <img src="assets/figures/training_curve.png" alt="Training Curve" width="54%">
 </p>
 
 ---
