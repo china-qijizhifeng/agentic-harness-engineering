@@ -1,4 +1,4 @@
-# Agentic Harness Engineering: Self-Evolving Coding Agents
+# Agentic Harness Engineering: Observability-Driven Automatic Evolution of Coding-Agent Harnesses
 
 <div align="left">
 
@@ -20,7 +20,7 @@
 
 ## 📰 News
 
-- **[2026-04-28]** 📄 Paper released on arXiv: [OctoBench: Benchmarking Scaffold-Aware Instruction Following in Repository-Grounded Agentic Coding](https://arxiv.org/abs/2604.25850)
+- **[2026-04-28]** 📄 Paper released on arXiv: [Agentic Harness Engineering: Observability-Driven Automatic Evolution of Coding-Agent Harnesses](https://arxiv.org/abs/2604.25850)
 - **[2026-04]** 🎉 Framework released
 
 ---
