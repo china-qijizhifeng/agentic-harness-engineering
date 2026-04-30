@@ -19,6 +19,7 @@
 
 ## 📰 News
 
+- **[2026-04-30]** ✍️ Blog post on Dawning Road (English & Chinese) — a more detailed account of the exploration behind AHE: [Agentic Harness Engineering](https://dawning-road.github.io/blog/agentic-harness-engineering)
 - **[2026-04-28]** 📄 Paper released on arXiv: [Agentic Harness Engineering: Observability-Driven Automatic Evolution of Coding-Agent Harnesses](https://arxiv.org/abs/2604.25850)
 - **[2026-04]** 🎉 Framework released
 
