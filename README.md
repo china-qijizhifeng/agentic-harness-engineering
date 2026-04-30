@@ -220,6 +220,8 @@ An experiment's data source is specified via `path` **or** `dataset` — pick on
 | `path: "/abs/path/xxx"` | Local dataset directory (absolute path) | `/root/dataset/terminal-bench-2` |
 | `dataset: "<name>@<ver>"` | Reference a harbor built-in dataset (no local files required) | `terminal-bench@2.0` |
 
+Public dataset packs (in the layout AHE expects under `path:`) are published at [`laude-institute/harbor-datasets`](https://github.com/laude-institute/harbor-datasets) — clone or download the subset you need and point `path` at its directory.
+
 The default `path` values in `base.yaml` and `configs/experiments/*.yaml` are **placeholders only** — adjust them for your environment, or comment out `path` and uncomment the `dataset` line to use a harbor built-in dataset instead.
 
 ---
