@@ -11,7 +11,8 @@
 </div>
 
 <p align="center">
-  <img src="assets/figures/method.png" alt="AHE Pipeline" width="100%">
+  <img src="assets/figures/method.png" alt="AHE Pipeline" width="44%">
+  <img src="assets/figures/training_curve.png" alt="Training Curve" width="54%">
 </p>
 
 ---
