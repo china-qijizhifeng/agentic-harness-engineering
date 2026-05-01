@@ -35,8 +35,6 @@ AHE rests on three observability layers:
 - **Experience observability** — *Agent Debugger* distills ~10M-token raw traces into layered, sourced reports; the optimizer reads digests by default but can always drill back to any rollout's raw trace.
 - **Decision observability** — *Evolve Agent* proposes evidence-backed edits, predicts their impact, and is automatically falsified by the next iteration's flipped tasks.
 
-> **Note on Agent Debugger licensing.** The current release ships a *partially* open-sourced Agent Debugger; due to company strategy, it cannot be fully open-sourced at this time.
-
 Across ten `evaluate → analyze → improve` iterations, **AHE (Agentic Harness Engineering)** lifts Terminal-Bench 2 pass@1 from **69.7% to 77.0%**, surpasses the hand-written Codex (71.9%) and the self-evolving ACE and TF-GRPO baselines, and produces a frozen harness that transfers without re-evolution to SWE-bench-verified and to four alternate base models, indicating that the evolved components encode general engineering experience rather than benchmark-specific tuning.
 
 <p align="center">
@@ -175,6 +173,8 @@ The **trace, not the pass rate**, is the unit every later step operates on.
 - `analysis/detail/{task}.md` — per-task deep analysis
 
 The optimizer reads digests by default, but every claim links back to the originating raw trace, so it can drill down before committing to a change.
+
+> **Note on Agent Debugger licensing.** The current release ships a *partially* open-sourced Agent Debugger; due to company strategy, it cannot be fully open-sourced at this time.
 
 ### 3. Improve — evidence-backed, falsifiable edits
 
