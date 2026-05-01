@@ -40,7 +40,7 @@ AHE rests on three observability layers:
 Across ten `evaluate → analyze → improve` iterations, **AHE (Agentic Harness Engineering)** lifts Terminal-Bench 2 pass@1 from **69.7% to 77.0%**, surpasses the hand-written Codex (71.9%) and the self-evolving ACE and TF-GRPO baselines, and produces a frozen harness that transfers without re-evolution to SWE-bench-verified and to four alternate base models, indicating that the evolved components encode general engineering experience rather than benchmark-specific tuning.
 
 <p align="center">
-  <img src="assets/figures/transfer_model.png" alt="Cross-Model Transfer" width="70%">
+  <img src="assets/figures/transfer_model.png" alt="Cross-Model Transfer" width="60%">
 </p>
 
 ---
