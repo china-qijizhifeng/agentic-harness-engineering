@@ -66,7 +66,7 @@ cd agentic-harness-engineering
 uv sync
 ```
 
-> `uv sync` installs every dependency declared in `pyproject.toml`, including the private repositories `NexAU` and `harbor-LJH`. Your `GITHUB_TOKEN` must have pull access to both.
+> `uv sync` installs every dependency declared in `pyproject.toml`.
 
 ### 2. Configure environment variables
 
@@ -80,7 +80,6 @@ Edit `.env`. At minimum, set:
 |---|---|
 | `LLM_API_KEY` / `LLM_BASE_URL` | Main LLM endpoint (`code_agent` and `evolve_agent` both consume it) |
 | `E2B_API_KEY` | E2B sandbox — see the next subsection for SaaS vs. self-hosted |
-| `GITHUB_TOKEN` | Required for private deps (`NexAU`, `harbor-LJH`) and internal harbor operations |
 | `SERPER_API_KEY` | Web search used by `evolve_agent` |
 
 `ADB_LLM_*` and `GPT54_LLM_*` are optional — leave them unset to fall back to `LLM_*`, or set them to point ADB / the gpt-5.4 experiment at a stronger model. `LANGFUSE_*`, `BP_HTML_PARSER_*`, and `FEISHU_WEBHOOK` are all optional observability / convenience hooks; see `.env.example` for the full list.
