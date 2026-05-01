@@ -11,8 +11,7 @@
 </div>
 
 <p align="center">
-  <img src="assets/figures/case_study.png" alt="Case Study" width="44%">
-  <img src="assets/figures/training_curve.png" alt="Training Curve" width="54%">
+  <img src="assets/figures/method.png" alt="AHE Pipeline" width="100%">
 </p>
 
 ---
@@ -37,7 +36,12 @@ AHE rests on three observability layers:
 
 > **Note on Agent Debugger licensing.** The current release ships a *partially* open-sourced Agent Debugger; due to company strategy, it cannot be fully open-sourced at this time.
 
-Each outer loop runs `evaluate → analyze → improve`: the current harness is benchmarked via `harbor`, the resulting traces are distilled, then *Evolve Agent* rewrites whichever components the evidence points at — until a target pass rate or iteration cap is reached.
+Across ten `evaluate → analyze → improve` iterations, **AHE (Agentic Harness Engineering)** lifts Terminal-Bench 2 pass@1 from **69.7% to 77.0%**, surpasses the hand-written Codex (71.9%) and the self-evolving ACE and TF-GRPO baselines, and produces a frozen harness that transfers without re-evolution to SWE-bench-verified and to four alternate base models, indicating that the evolved components encode general engineering experience rather than benchmark-specific tuning.
+
+<p align="center">
+  <img src="assets/figures/case_study.png" alt="Case Study" width="48%">
+  <img src="assets/figures/transfer_model.png" alt="Cross-Model Transfer" width="48%">
+</p>
 
 ---
 
