@@ -104,6 +104,8 @@ AHE runs every rollout inside an E2B sandbox. Two deployment modes are supported
 
 ### 3. Build E2B templates (one-time per dataset)
 
+The dataset here is a pack from [`laude-institute/harbor-datasets`](https://github.com/laude-institute/harbor-datasets) — clone the subset you need and point `--dataset-dir` at its directory.
+
 Every rollout runs inside an E2B sandbox spawned from a prebuilt template that already has `uv` and the NexAU/harbor venv at `/opt/nexau-venv`. Build those templates once before launching:
 
 ```bash
