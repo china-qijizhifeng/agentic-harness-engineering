@@ -79,7 +79,7 @@ Edit `.env`. At minimum, set:
 | Variable | Purpose |
 |---|---|
 | `LLM_API_KEY` / `LLM_BASE_URL` | Main LLM endpoint (`code_agent` and `evolve_agent` both consume it) |
-| `E2B_API_KEY` | E2B sandbox — see the next subsection for SaaS vs. self-hosted |
+| `E2B_API_KEY` | [E2B](https://e2b.dev/) sandbox — see the next subsection for SaaS vs. self-hosted |
 | `SERPER_API_KEY` | Web search used by `evolve_agent` |
 
 `ADB_LLM_*` and `GPT54_LLM_*` are optional — leave them unset to fall back to `LLM_*`, or set them to point ADB / the gpt-5.4 experiment at a stronger model. `LANGFUSE_*`, `BP_HTML_PARSER_*`, and `FEISHU_WEBHOOK` are all optional observability / convenience hooks; see `.env.example` for the full list.
@@ -149,12 +149,39 @@ tmux kill-session -t <session>  # terminate
 
 ## 🔧 How It Works
 
-The core is an **evaluate → analyze → improve** loop:
+The base model is held fixed; what evolves is the **harness around it**. Each outer iteration is `evaluate → analyze → improve`, built on the three observability layers from the Overview.
 
-1. **Evaluate**: use `harbor` to run the current agent against the dataset.
-2. **Analyze**: collect failing traces, summaries, and metrics.
-3. **Improve**: `evolve_agent` uses that evidence to modify the `code_agent`'s prompts, tool descriptions, and workflow.
-4. **Loop**: return to step 1 until `target_pass_rate` or `max_iterations` is reached.
+### 1. Evaluate — emit traces, not just scores
+
+`harbor` runs the current `code_agent` over the dataset inside isolated E2B sandboxes. Per task it writes:
+
+- `agent/nexau_in_memory_tracer.cleaned.json` — full step-level trace (messages, tool calls, middleware events)
+- `agent/nexau.txt` — runtime log (middleware errors, crashes, warnings)
+- `verifier/reward.txt` — pass/fail outcome
+
+The **trace, not the pass rate**, is the unit every later step operates on.
+
+### 2. Analyze — distill ~10M-token traces into sourced evidence
+
+*Agent Debugger* compresses each iteration's raw traces (routinely >10M tokens) into layered reports:
+
+- `analysis/overview.md` — cross-task root-cause summary
+- `analysis/detail/{task}.md` — per-task deep analysis
+
+The optimizer reads digests by default, but every claim links back to the originating raw trace, so it can drill down before committing to a change.
+
+### 3. Improve — evidence-backed, falsifiable edits
+
+*Evolve Agent* may only write inside `workspace/`, which exposes the seven NexAU components: `systemprompt.md`, `code_agent.yaml`, `tool_descriptions/`, `tools/`, `middleware/`, `skills/`, `sub_agents/` (plus `LongTermMEMORY.md`). For every edit it must commit four fields:
+
+1. **Failure evidence** — the failing tasks and trace excerpts that motivate the change
+2. **Root cause** — *why* it failed, not just *what* failed
+3. **Targeted fix** — the change that directly addresses that cause
+4. **Predicted impact** — which tasks should flip to pass, and which are at risk
+
+### 4. Loop — staggered generations enable falsification
+
+Each `runs/iteration_NNN/` mixes two generations: `input/` holds the workspace produced by loop `NNN-1` (just evaluated), `evolve/` holds what loop `NNN` writes (evaluated next loop). Flips (pass↔fail) on the next eval are attributed back to this loop's edits in `change_evaluation.json` — predictions that don't hold get rolled back or revised. The loop terminates on `target_pass_rate` or `max_iterations`.
 
 ### Main components
 
