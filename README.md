@@ -15,14 +15,18 @@
 </div>
 
 <p align="center">
-  <img src="assets/figures/case_study.png" alt="Case Study" width="44%">
-  <img src="assets/figures/training_curve.png" alt="Training Curve" width="54%">
+  <img src="assets/figures/banner.jpg" alt="Agentic Harness Engineering" width="100%">
+</p>
+
+<p align="center">
+  <img src="assets/figures/training_curve.png" alt="Training Curve" width="70%">
 </p>
 
 ---
 
 ## 📰 News
 
+- **[2026-05-14]** 🏆 AHE (on GPT-5.5) ranked **#3** on the [Terminal-Bench 2.0 leaderboard](https://www.tbench.ai/leaderboard/terminal-bench/2.0) with **84.7%** — ranking as of 2026-05-15
 - **[2026-04-30]** ✍️ Blog post on Dawning Road (English & Chinese) — a more detailed account of the exploration behind AHE: [Agentic Harness Engineering](https://dawning-road.github.io/blog/agentic-harness-engineering)
 - **[2026-04-28]** 📄 Paper released on arXiv: [Agentic Harness Engineering: Observability-Driven Automatic Evolution of Coding-Agent Harnesses](https://arxiv.org/abs/2604.25850)
 - **[2026-04]** 🎉 Framework released
@@ -39,10 +43,11 @@ AHE rests on three observability layers:
 - **Experience observability** — *Agent Debugger* distills ~10M-token raw traces into layered, sourced reports; the optimizer reads digests by default but can always drill back to any rollout's raw trace.
 - **Decision observability** — *Evolve Agent* proposes evidence-backed edits, predicts their impact, and is automatically falsified by the next iteration's flipped tasks.
 
-Across ten `evaluate → analyze → improve` iterations, **AHE (Agentic Harness Engineering)** lifts Terminal-Bench 2 pass@1 from **69.7% to 77.0%**, surpasses the hand-written Codex (71.9%) and the self-evolving ACE and TF-GRPO baselines, and produces a frozen harness that transfers without re-evolution to SWE-bench-verified and to four alternate base models, indicating that the evolved components encode general engineering experience rather than benchmark-specific tuning.
+Across ten `evaluate → analyze → improve` iterations, **AHE (Agentic Harness Engineering)** lifts Terminal-Bench 2 pass@1 from **69.7% to 77.0%** on GPT-5.4, surpasses the hand-written Codex (71.9%) and the self-evolving ACE and TF-GRPO baselines, and produces a frozen harness that transfers without re-evolution to SWE-bench-verified and to four alternate base models, indicating that the evolved components encode general engineering experience rather than benchmark-specific tuning.
 
 <p align="center">
-  <img src="assets/figures/transfer_model.png" alt="Cross-Model Transfer" width="60%">
+  <img src="assets/figures/transfer_model.png" alt="Cross-Model Transfer" width="47%">
+  <img src="assets/figures/case_study.png" alt="Case Study" width="51%">
 </p>
 
 ---
