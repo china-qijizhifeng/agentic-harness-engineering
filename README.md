@@ -1,7 +1,3 @@
-<p align="right">
-  English | <a href="README_zh.md">简体中文</a>
-</p>
-
 # Agentic Harness Engineering: Observability-Driven Automatic Evolution of Coding-Agent Harnesses
 
 <div align="left">
@@ -16,6 +12,10 @@
 
 <p align="center">
   <img src="assets/figures/banner.jpg" alt="Agentic Harness Engineering" width="100%">
+</p>
+
+<p align="right">
+  English | <a href="README_zh.md">简体中文</a>
 </p>
 
 ---

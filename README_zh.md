@@ -1,7 +1,3 @@
-<p align="right">
-  <a href="README.md">English</a> | 简体中文
-</p>
-
 # Agentic Harness Engineering：以可观测性驱动的编码 Agent Harness 自动演化
 
 <div align="left">
@@ -16,6 +12,10 @@
 
 <p align="center">
   <img src="assets/figures/banner.jpg" alt="Agentic Harness Engineering" width="100%">
+</p>
+
+<p align="right">
+  <a href="README.md">English</a> | 简体中文
 </p>
 
 > 本文档为英文 [README.md](README.md) 的中文翻译，可能略有滞后；如有冲突以英文版为准。
