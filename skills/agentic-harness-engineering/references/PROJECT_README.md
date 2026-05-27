@@ -1,5 +1,12 @@
 # 🦁 HARNESS.md + AHE.skill
 
+> **此文件为原项目仓库的 README 备份（作为 skill 的参考材料保留）。**
+> 文档中出现的相对路径（如 `AHE.skill/scripts/...`、`examples/...`）描述的是原 GitHub 仓库布局；
+> 在本 skill 内的对应位置为：
+> - `AHE.skill/scripts/` → `scripts/`
+> - `AHE.skill/references/` → `references/`
+> - `examples/`、`analysis/`、`docs/`、`HARNESS.md` → `references/examples/`、`references/analysis/`、`references/docs/`、`references/HARNESS.md`
+
 > **Status: v0.1 experimental**
 >
 > 将复旦&北大的 Agentic Harness Engineering 论文的核心思想，蒸馏成一份跨 Agent 的 Harness 规范和一个初版审计工具。

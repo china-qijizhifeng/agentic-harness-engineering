@@ -15,7 +15,7 @@ header() { echo ""; echo "===== $1 ====="; }
 # 1. py_compile — 所有 Python 脚本语法检查
 header "1. py_compile"
 ALL_PY_OK=true
-for f in "$ROOT"/AHE.skill/scripts/*.py; do
+for f in "$ROOT"/scripts/*.py; do
     if python3 -m py_compile "$f" 2>/dev/null; then
         echo "  ✓ $(basename $f)"
     else
@@ -27,13 +27,13 @@ $ALL_PY_OK && green "All Python scripts compile" || red "Python compile error"
 
 # 2. Schema validate
 header "2. Schema validate"
-python3 -m json.tool "$ROOT/AHE.skill/references/change-manifest-schema.json" > /dev/null 2>&1 && \
+python3 -m json.tool "$ROOT/references/change-manifest-schema.json" > /dev/null 2>&1 && \
   python3 -c "
 import json
 try:
     import jsonschema
-    schema = json.load(open('$ROOT/AHE.skill/references/change-manifest-schema.json'))
-    sample = json.load(open('$ROOT/examples/minimal-workspace/manifests/example_manifest.json'))
+    schema = json.load(open('$ROOT/references/change-manifest-schema.json'))
+    sample = json.load(open('$ROOT/references/examples/minimal-workspace/manifests/example_manifest.json'))
     jsonschema.validate(sample, schema)
     print('  \u2713 example_manifest.json validates')
 except ImportError:
@@ -43,7 +43,7 @@ except ImportError:
 
 # 3. validate example
 header "3. validate example"
-python3 "$ROOT/AHE.skill/scripts/validate_harness.py" "$ROOT/examples/minimal-workspace" --json 2>/dev/null | python3 -c "
+python3 "$ROOT/scripts/validate_harness.py" "$ROOT/references/examples/minimal-workspace" --json 2>/dev/null | python3 -c "
 import sys, json
 d = json.load(sys.stdin)
 assert d['compliance_pct'] >= 0, 'Negative score'
@@ -54,8 +54,8 @@ print(f'  Score: {d[\"compliance_pct\"]}%')
 header "4. init + validate"
 TMPDIR=$(mktemp -d 2>/dev/null || echo "$ROOT/tmp/ci-test-$$")
 mkdir -p "$TMPDIR"
-python3 "$ROOT/AHE.skill/scripts/init_harness.py" "$TMPDIR/test-workspace" --profile generic > /dev/null 2>&1
-python3 "$ROOT/AHE.skill/scripts/validate_harness.py" "$TMPDIR/test-workspace" --json 2>/dev/null | python3 -c "
+python3 "$ROOT/scripts/init_harness.py" "$TMPDIR/test-workspace" --profile generic > /dev/null 2>&1
+python3 "$ROOT/scripts/validate_harness.py" "$TMPDIR/test-workspace" --json 2>/dev/null | python3 -c "
 import sys, json
 d = json.load(sys.stdin)
 assert d['compliance_pct'] >= 0, 'Init workspace invalid'
@@ -67,7 +67,7 @@ rm -rf "$TMPDIR"
 header "5. generate + verify"
 TMPDIR2=$(mktemp -d 2>/dev/null || echo "$ROOT/tmp/ci-test-$$-2")
 mkdir -p "$TMPDIR2"
-python3 "$ROOT/AHE.skill/scripts/init_harness.py" "$TMPDIR2/test-workspace" > /dev/null 2>&1
+python3 "$ROOT/scripts/init_harness.py" "$TMPDIR2/test-workspace" > /dev/null 2>&1
 cd "$TMPDIR2/test-workspace"
 git init > /dev/null 2>&1
 git config user.email "ci@ahe" > /dev/null 2>&1
@@ -75,13 +75,13 @@ git config user.name "AHE CI" > /dev/null 2>&1
 git add -A > /dev/null 2>&1
 git commit -m "init" > /dev/null 2>&1
 echo "# Extra rule" >> AGENTS.md
-python3 "$ROOT/AHE.skill/scripts/generate_manifest.py" --workspace . --diff --author ci-test > /dev/null 2>&1
+python3 "$ROOT/scripts/generate_manifest.py" --workspace . --diff --author ci-test > /dev/null 2>&1
 GEN_COUNT=$(find manifests -name "change_*.json" 2>/dev/null | wc -l)
 echo "  Generated: $GEN_COUNT manifest(s)"
 echo '{"passed":["T-001"],"failed":[]}' > /tmp/ahe_test_results.json 2>/dev/null || echo '{"passed":["T-001"],"failed":[]}' > "$TMPDIR2/test-workspace/results.json"
 RESULTS_FILE="/tmp/ahe_test_results.json"
 [ -f "$RESULTS_FILE" ] || RESULTS_FILE="$TMPDIR2/test-workspace/results.json"
-python3 "$ROOT/AHE.skill/scripts/verify_manifest.py" --workspace . --results "$RESULTS_FILE" > /dev/null 2>&1
+python3 "$ROOT/scripts/verify_manifest.py" --workspace . --results "$RESULTS_FILE" > /dev/null 2>&1
 cd "$ROOT"
 rm -rf "$TMPDIR2" "$TMPDIR2/test-workspace/results.json"
 [ $GEN_COUNT -gt 0 ] && green "Generate + verify workflow passes" || red "Generate/verify failed"
@@ -92,8 +92,8 @@ python3 -c "
 import json, os
 try:
     import jsonschema
-    schema = json.load(open('$ROOT/AHE.skill/references/change-manifest-schema.json'))
-    wrk = '$ROOT/examples/minimal-workspace'
+    schema = json.load(open('$ROOT/references/change-manifest-schema.json'))
+    wrk = '$ROOT/references/examples/minimal-workspace'
     for mf in sorted(os.listdir(os.path.join(wrk, 'manifests'))):
         if mf.endswith('.json'):
             data = json.load(open(os.path.join(wrk, 'manifests', mf)))

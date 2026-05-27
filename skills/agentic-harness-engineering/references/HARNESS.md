@@ -331,7 +331,7 @@ HARNESS.md 定义的标准演化循环：
 
 ### 实现参考
 
-- [AHE.skill](AHE.skill/) — Hermes 上实现本规范的 Skill（含 audit、generate-manifest、verify 功能）
+- [agentic-harness-engineering skill](../SKILL.md) — 实现本规范的 Skill（含 audit、generate-manifest、verify 功能）
 - [AHE 论文](https://arxiv.org/abs/2604.25850) — 本规范的学术基础（复旦 & 北大，2026）
 
 ---
