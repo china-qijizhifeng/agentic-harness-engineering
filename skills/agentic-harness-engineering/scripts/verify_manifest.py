@@ -36,44 +36,41 @@ def load_pending_manifests(root: Path) -> list:
 
 
 def evaluate_predictions(changes: list, results: dict) -> dict:
-    """对比 changes 中的预测与 results 中的评估结果"""
-    expected_fixes_verified = []
-    unexpected_fixes = []
-    regressions_observed = []
-    false_predictions = []
-
-    # 获取本轮结果
+    """对比 changes 中的预测与 results 中的评估结果（在所有 changes 聚合后全局评估）"""
     all_passed = set(results.get("passed", []))
     all_failed = set(results.get("failed", []))
 
+    # 聚合所有 changes 的预测集合
+    all_expected = set()
+    all_at_risk = set()
     for change in changes:
         predicted = change.get("predicted_impact", {})
-        expected = set(predicted.get("expected_fixes", []))
-        at_risk = set(predicted.get("at_risk_regressions", []))
+        all_expected.update(predicted.get("expected_fixes", []))
+        all_at_risk.update(predicted.get("at_risk_regressions", []))
 
-        # 检查预期修复是否真的通过了
-        for task_id in expected:
-            if task_id in all_passed:
-                expected_fixes_verified.append(task_id)
+    expected_fixes_verified = set()
+    unexpected_fixes = set()
+    regressions_observed = set()
+    false_predictions = set()
 
-        # 检查是否有预期之外的通过
-        for task_id in all_passed:
-            if task_id not in expected and task_id != "":
-                unexpected_fixes.append(task_id)
+    # 预期修复：通过 → verified；失败 → false prediction
+    for task_id in all_expected:
+        if task_id in all_passed:
+            expected_fixes_verified.add(task_id)
+        elif task_id in all_failed:
+            false_predictions.add(f"{task_id}: expected pass but failed")
 
-        # 检查是否有回归
-        for task_id in at_risk:
-            if task_id in all_failed:
-                regressions_observed.append(task_id)
+    # 预期之外的通过
+    for task_id in all_passed:
+        if task_id and task_id not in all_expected:
+            unexpected_fixes.add(task_id)
 
-        # 检查预测错误
-        for task_id in expected:
-            if task_id in all_failed:
-                false_predictions.append(f"{task_id}: expected pass but failed")
-
-        for task_id in at_risk:
-            if task_id in all_passed:
-                false_predictions.append(f"{task_id}: expected regression but passed")
+    # 风险回归：失败 → observed；通过 → false prediction
+    for task_id in all_at_risk:
+        if task_id in all_failed:
+            regressions_observed.add(task_id)
+        elif task_id in all_passed:
+            false_predictions.add(f"{task_id}: expected regression but passed")
 
     # 计算 verdict
     if regressions_observed:
@@ -86,10 +83,10 @@ def evaluate_predictions(changes: list, results: dict) -> dict:
         verdict = "partial"
 
     return {
-        "expected_fixes_verified": expected_fixes_verified,
-        "unexpected_fixes": unexpected_fixes,
-        "regressions_observed": regressions_observed,
-        "false_predictions": false_predictions,
+        "expected_fixes_verified": sorted(expected_fixes_verified),
+        "unexpected_fixes": sorted(unexpected_fixes),
+        "regressions_observed": sorted(regressions_observed),
+        "false_predictions": sorted(false_predictions),
         "verdict": verdict
     }
 

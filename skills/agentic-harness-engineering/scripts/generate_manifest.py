@@ -10,6 +10,7 @@ Generate Change Manifest — 根据 git diff 或用户输入生成 HARNESS.md Ch
 输出:
   将 manifest 写入 manifests/change_<timestamp>.json
 """
+import copy
 import os
 import sys
 import json
@@ -48,7 +49,7 @@ def get_next_iteration(root: Path) -> int:
 
 def parse_git_diff(root: Path, staged: bool = False) -> list:
     """从 git diff 提取变更信息"""
-    cmd = ["git", "diff"]
+    cmd = ["git", "diff", "--name-only"]
     if staged:
         cmd.append("--staged")
     try:
@@ -67,36 +68,32 @@ def parse_git_diff(root: Path, staged: bool = False) -> list:
 
 
 def parse_diff_output(diff_text: str, root: Path) -> list:
-    """解析 git diff 输出，映射到组件"""
+    """解析 `git diff --name-only` 输出，映射到组件"""
     changes = []
-    current_file = None
+    seen_paths = set()
     for line in diff_text.splitlines():
-        if line.startswith("--- a/") or line.startswith("+++ b/"):
-            current_file = line[6:].strip()
-        elif line.startswith("diff --git"):
-            parts = line.split()
-            if len(parts) >= 4:
-                current_file = parts[3][2:]  # b/path
-
-        if current_file and current_file != "/dev/null":
-            rel_path = Path(current_file)
-            component = _detect_component(rel_path)
-            if component and not any(c["file_path"] == current_file for c in changes):
-                changes.append({
-                    "change_id": f"ch_{len(changes) + 1:03d}",
-                    "component": component,
-                    "subtype": "update",
-                    "file_path": current_file,
-                    "summary": f"Modify {current_file}",
-                    "failure_evidence": "",
-                    "root_cause": "",
-                    "targeted_fix": "",
-                    "predicted_impact": {
-                        "expected_fixes": [],
-                        "at_risk_regressions": [],
-                        "rationale": ""
-                    }
-                })
+        file_path = line.strip()
+        if not file_path or file_path in seen_paths:
+            continue
+        seen_paths.add(file_path)
+        component = _detect_component(Path(file_path))
+        if not component:
+            continue
+        changes.append({
+            "change_id": f"ch_{len(changes) + 1:03d}",
+            "component": component,
+            "subtype": "update",
+            "file_path": file_path,
+            "summary": f"Modify {file_path}",
+            "failure_evidence": "",
+            "root_cause": "",
+            "targeted_fix": "",
+            "predicted_impact": {
+                "expected_fixes": [],
+                "at_risk_regressions": [],
+                "rationale": ""
+            }
+        })
     return changes
 
 
@@ -173,7 +170,7 @@ def write_manifest(root: Path, changes: list, author: str):
     now = datetime.now(TZ)
     scheduled = (now + timedelta(hours=24)).isoformat()
 
-    manifest = dict(MANIFEST_TEMPLATE)
+    manifest = copy.deepcopy(MANIFEST_TEMPLATE)
     manifest["iteration"] = next_iter
     manifest["timestamp"] = now.isoformat()
     manifest["author"] = author or "agent"

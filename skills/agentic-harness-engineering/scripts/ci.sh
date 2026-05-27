@@ -78,12 +78,11 @@ echo "# Extra rule" >> AGENTS.md
 python3 "$ROOT/scripts/generate_manifest.py" --workspace . --diff --author ci-test > /dev/null 2>&1
 GEN_COUNT=$(find manifests -name "change_*.json" 2>/dev/null | wc -l)
 echo "  Generated: $GEN_COUNT manifest(s)"
-echo '{"passed":["T-001"],"failed":[]}' > /tmp/ahe_test_results.json 2>/dev/null || echo '{"passed":["T-001"],"failed":[]}' > "$TMPDIR2/test-workspace/results.json"
-RESULTS_FILE="/tmp/ahe_test_results.json"
-[ -f "$RESULTS_FILE" ] || RESULTS_FILE="$TMPDIR2/test-workspace/results.json"
+RESULTS_FILE="$TMPDIR2/test-workspace/results.json"
+echo '{"passed":["T-001"],"failed":[]}' > "$RESULTS_FILE"
 python3 "$ROOT/scripts/verify_manifest.py" --workspace . --results "$RESULTS_FILE" > /dev/null 2>&1
 cd "$ROOT"
-rm -rf "$TMPDIR2" "$TMPDIR2/test-workspace/results.json"
+rm -rf "$TMPDIR2"
 [ $GEN_COUNT -gt 0 ] && green "Generate + verify workflow passes" || red "Generate/verify failed"
 
 # 6. verify 后 manifest 仍符合 schema

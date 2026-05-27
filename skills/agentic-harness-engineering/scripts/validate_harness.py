@@ -27,14 +27,16 @@ def _load_profiles():
                 checks = {}
                 current_check = None
                 for line in lines:
-                    line = line.strip()
-                    if line.startswith("check:"):
+                    stripped = line.strip()
+                    if not stripped or stripped.startswith("#"):
+                        continue
+                    if stripped.startswith("check:"):
                         continue
                     if line.startswith("  ") and not line.startswith("    "):
                         # Top-level check name
-                        current_check = line.strip().rstrip(":")
-                    elif current_check and ":" in line:
-                        key, val = line.split(":", 1)
+                        current_check = stripped.rstrip(":")
+                    elif current_check and ":" in stripped:
+                        key, val = stripped.split(":", 1)
                         key = key.strip()
                         val = val.strip()
                         if current_check not in checks:
