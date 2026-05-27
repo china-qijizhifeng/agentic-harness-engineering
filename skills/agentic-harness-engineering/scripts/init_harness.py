@@ -147,9 +147,9 @@ def init_workspace(path: str, profile: str = "generic"):
         full_path.parent.mkdir(parents=True, exist_ok=True)
         full_path.write_text(content, encoding="utf-8")
 
-    # .gitignore
+    # .gitignore — manifests/ 必须 git-tracked（HARNESS.md §合规清单）
     (root / ".gitignore").write_text(
-        "# HARNESS.md\nmanifests/*.json\n__pycache__/\n", encoding="utf-8")
+        "# HARNESS.md\n__pycache__/\n", encoding="utf-8")
 
     print(f"[OK] Harness workspace initialized at: {root.resolve()}")
     print(f"     Profile: {profile}")
