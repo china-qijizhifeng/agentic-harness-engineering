@@ -1,0 +1,9 @@
+name: example_tool
+description: A minimal example tool for HARNESS.md compliance testing
+input_schema:
+  type: object
+  properties:
+    message:
+      type: string
+      description: The message to echo back
+  required: [message]

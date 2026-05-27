@@ -1,0 +1,27 @@
+{
+  "manifest_version": "1.0",
+  "harness_spec_version": "1.0",
+  "iteration": 1,
+  "timestamp": "2026-05-21T00:00:00+08:00",
+  "author": "harness-init",
+  "changes": [
+    {
+      "change_id": "ch_001",
+      "component": "tool_descriptions",
+      "subtype": "create",
+      "file_path": "tool_descriptions/example.tool.yaml",
+      "summary": "Initial example tool",
+      "failure_evidence": "N/A — initial setup",
+      "root_cause": "N/A — initial setup",
+      "targeted_fix": "Create first tool description and implementation",
+      "predicted_impact": {
+        "expected_fixes": [],
+        "at_risk_regressions": [],
+        "rationale": "Initial setup, no predictions"
+      }
+    }
+  ],
+  "verification": {
+    "status": "pending"
+  }
+}

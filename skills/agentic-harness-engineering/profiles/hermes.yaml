@@ -1,0 +1,36 @@
+# Hermes Agent profile for HARNESS.md validation
+# Tool descriptions in Hermes come from tool_descriptions/*.yaml
+# Tool implementations are in tools/*.py
+check:
+  system_rules:
+    files: ["AGENTS.md", "SOUL.md", "systemprompt.md"]
+    required: true
+    weight: 2
+  tool_descriptions:
+    dir: tool_descriptions
+    extensions: [".yaml", ".yml", ".json"]
+    required: true
+    weight: 2
+  tool_implementations:
+    dir: tools
+    extensions: [".py", ".js", ".ts", ".sh"]
+    required: true
+    weight: 2
+  middleware:
+    dir: middleware
+    extensions: [".py", ".js", ".ts"]
+    required: false
+    weight: 1
+  skills:
+    dir: skills
+    indicator: "SKILL.md"
+    required: false
+    weight: 1
+  sub_agents:
+    dir: sub_agents
+    required: false
+    weight: 1
+  long_term_memory:
+    files: ["MEMORY.md", "experiences.md", "LongTermMEMORY.md"]
+    required: false
+    weight: 1

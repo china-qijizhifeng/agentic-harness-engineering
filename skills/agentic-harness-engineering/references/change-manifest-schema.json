@@ -1,0 +1,174 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Agent Harness Change Manifest",
+  "description": "Standard format for recording falsifiable changes to Agent Harness components, per HARNESS.md v1.0",
+  "type": "object",
+  "required": [
+    "manifest_version",
+    "harness_spec_version",
+    "iteration",
+    "timestamp",
+    "author",
+    "changes",
+    "verification"
+  ],
+  "properties": {
+    "manifest_version": {
+      "type": "string",
+      "description": "Manifest format version",
+      "pattern": "^\\d+\\.\\d+$"
+    },
+    "harness_spec_version": {
+      "type": "string",
+      "description": "The HARNESS.md version this manifest follows",
+      "pattern": "^\\d+\\.\\d+$"
+    },
+    "iteration": {
+      "type": "integer",
+      "description": "Evolution iteration number",
+      "minimum": 0
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the change was made (ISO 8601)"
+    },
+    "author": {
+      "type": "string",
+      "description": "Who made the change (agent name or human)"
+    },
+    "changes": {
+      "type": "array",
+      "description": "List of changes in this iteration",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "change_id",
+          "component",
+          "subtype",
+          "file_path",
+          "failure_evidence",
+          "root_cause",
+          "targeted_fix",
+          "predicted_impact"
+        ],
+        "properties": {
+          "change_id": {
+            "type": "string",
+            "description": "Unique identifier for this change"
+          },
+          "component": {
+            "type": "string",
+            "enum": [
+              "system_rules",
+              "tool_descriptions",
+              "tool_implementations",
+              "middleware",
+              "skills",
+              "sub_agents",
+              "long_term_memory"
+            ],
+            "description": "Which of the 7 harness components was modified"
+          },
+          "subtype": {
+            "type": "string",
+            "enum": ["update", "create", "delete", "register"],
+            "description": "Type of modification"
+          },
+          "file_path": {
+            "type": "string",
+            "description": "Path to the modified file, relative to workspace root"
+          },
+          "summary": {
+            "type": "string",
+            "description": "One-line summary of the change"
+          },
+          "failure_evidence": {
+            "type": "string",
+            "description": "What failed, with trace or log excerpts as evidence"
+          },
+          "root_cause": {
+            "type": "string",
+            "description": "Root cause analysis of the failure"
+          },
+          "targeted_fix": {
+            "type": "string",
+            "description": "Specific description of what was changed and how it addresses the root cause"
+          },
+          "predicted_impact": {
+            "type": "object",
+            "required": ["expected_fixes", "at_risk_regressions"],
+            "properties": {
+              "expected_fixes": {
+                "type": "array",
+                "description": "Task IDs expected to flip from fail to pass",
+                "items": {"type": "string"}
+              },
+              "at_risk_regressions": {
+                "type": "array",
+                "description": "Task IDs that might regress due to this change",
+                "items": {"type": "string"}
+              },
+              "rationale": {
+                "type": "string",
+                "description": "Why these predictions were made"
+              }
+            }
+          }
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["pending", "draft", "verified", "reverted", "partial"],
+          "description": "Verification status"
+        },
+        "scheduled_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When verification is scheduled"
+        },
+        "completed_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When verification was completed"
+        },
+        "result": {
+          "type": "object",
+          "properties": {
+            "expected_fixes_verified": {
+              "type": "array",
+              "description": "Which expected fixes actually passed",
+              "items": {"type": "string"}
+            },
+            "unexpected_fixes": {
+              "type": "array",
+              "description": "Tasks that passed unexpectedly",
+              "items": {"type": "string"}
+            },
+            "regressions_observed": {
+              "type": "array",
+              "description": "Tasks that regressed",
+              "items": {"type": "string"}
+            },
+            "false_predictions": {
+              "type": "array",
+              "description": "Prediction errors",
+              "items": {"type": "string"}
+            }
+          }
+        },
+        "verdict": {
+          "type": "string",
+          "enum": ["keep", "revert", "partial"],
+          "description": "Final decision on this change"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,36 @@
+# Codex CLI profile for HARNESS.md validation
+# Codex uses a flat workspace with AGENTS.md for system rules
+# Tool implementations may be inline or in tools/
+check:
+  system_rules:
+    files: ["AGENTS.md", "SOUL.md", "systemprompt.md"]
+    required: true
+    weight: 2
+  tool_descriptions:
+    dir: tool_descriptions
+    extensions: [".yaml", ".yml", ".json"]
+    required: false
+    weight: 1
+  tool_implementations:
+    dir: tools
+    extensions: [".py", ".js", ".ts", ".sh"]
+    required: false
+    weight: 1
+  middleware:
+    dir: middleware
+    extensions: [".py", ".js", ".ts"]
+    required: false
+    weight: 1
+  skills:
+    dir: skills
+    indicator: "SKILL.md"
+    required: false
+    weight: 1
+  sub_agents:
+    dir: sub_agents
+    required: false
+    weight: 1
+  long_term_memory:
+    files: ["MEMORY.md", "experiences.md"]
+    required: false
+    weight: 1

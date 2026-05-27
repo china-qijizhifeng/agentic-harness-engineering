@@ -1,0 +1,36 @@
+# OpenClaw profile for HARNESS.md validation
+# OpenClaw uses AGENTS.md + SOUL.md for system rules
+# Tools are in tools/ directory, some descriptions injected at runtime
+check:
+  system_rules:
+    files: ["AGENTS.md", "SOUL.md", "systemprompt.md", "CLAUDE.md"]
+    required: true
+    weight: 2
+  tool_descriptions:
+    dir: tool_descriptions
+    extensions: [".yaml", ".yml", ".json", ".md"]
+    required: false
+    weight: 1
+  tool_implementations:
+    dir: tools
+    extensions: [".py", ".js", ".ts", ".sh"]
+    required: true
+    weight: 2
+  middleware:
+    dir: middleware
+    extensions: [".py", ".js", ".ts"]
+    required: false
+    weight: 1
+  skills:
+    dir: skills
+    indicator: "SKILL.md"
+    required: true
+    weight: 2
+  sub_agents:
+    dir: sub_agents
+    required: false
+    weight: 1
+  long_term_memory:
+    files: ["MEMORY.md", "experiences.md", "LongTermMEMORY.md"]
+    required: true
+    weight: 1
