@@ -1,0 +1,27 @@
+llm_config:
+  api_key: ${env.LLM_API_KEY}
+  api_type: openai_responses
+  base_url: ${env.LLM_BASE_URL}
+  max_tokens: 32000
+  model: ${env.LLM_MODEL}
+  reasoning:
+    effort: high
+    summary: detailed
+  stream: true
+  temperature: 0.7
+  top_p: 0.95
+max_context_tokens: 200000
+max_iterations: 300
+name: nexau_code_agent
+system_prompt: ./systemprompt.md
+system_prompt_type: jinja
+tool_call_mode: openai
+tools:
+- binding: tools.shell_tools:run_shell_command
+  name: run_shell_command
+  yaml_path: ./tool_descriptions/run_shell_command.tool.yaml
+middlewares:
+- import: middleware.execution_risk_hints:ExecutionRiskHintsMiddleware
+tracers:
+- import: nexau.archs.tracer.adapters.in_memory:InMemoryTracer
+type: agent

@@ -1,0 +1,105 @@
+type: tool
+name: run_shell_command
+description: >-
+  This tool executes a given shell command as `bash -c <command>`. To run a
+  command in the background, set `is_background: true`. Do NOT use `&` in the
+  command string. Command is executed as a subprocess that leads its own process
+  group. Command process group can be terminated as `kill -- -PGID` or signaled
+  as `kill -s SIGNAL -- -PGID`.
+
+  Practical guidance:
+
+  - Use `dir_path` to keep work in the task's real working directory and prefer
+    relative paths unless the task explicitly requires an absolute one.
+  - Use `timeout_ms` for risky foreground probes. The default is 300000 ms (5
+    minutes), which is often too expensive for exploratory commands. The valid
+    parameter name is `timeout_ms`, not `timeout`.
+  - Use `is_background: true` for long installs, servers, training runs, or
+    watchers; then inspect logs/status with separate short commands.
+  - Avoid giant one-shot rewrites that take minutes before the next check.
+    Prefer smaller edits with a quick regression after each.
+  - Do not treat import success, file existence, file size, or one successful
+    run as final proof. Before finishing, run at least one evaluator-facing
+    semantic check on the exact output, logs, ordering, or directory layout.
+  - If the contract names an exact public path/socket/file/artifact location,
+    validate that literal path/location in the final check. Root reachability or
+    a nearby equivalent endpoint/path does not count.
+  - If a program is supposed to emit a relative output file, run it once from a
+    scratch cwd outside the source tree and confirm the output lands in that
+    runtime cwd rather than beside the source file.
+  - For clean-directory tasks, inspect both files and directories in the final
+    layout; `find ... -type f` alone can miss forbidden cache folders.
+  - If you are recovering or reproducing a known artifact, source tree, or
+    commit, compare exact file contents and paths against that evidence instead
+    of "cleaning up" the result by intuition.
+  - If a key dependency is missing and the task still allows direct
+    implementation, stop repeatedly probing the environment and move to the best
+    bounded implementation plan.
+  - Once acceptance-style checks pass and cleanup constraints are satisfied,
+    stop polishing unless a new failing check appears.
+  - After an evaluator-style success, treat that repo/webroot/output state as the
+    live publish state. Do extra experiments in `/tmp` or a copied scratch
+    directory instead of resetting the verified state to "clean it up", rewriting
+    checked files, or rerunning stateful generator scripts against live outputs.
+  - For single-file or clean-directory tasks, keep experiments outside the final
+    delivery directory and finish with a literal layout check (`ls`/`find`) that
+    only the allowed files remain.
+  - For constrained text/config/script outputs, reread the final file from disk
+    and validate the exact allowed tokens/lines literally, not with the same
+    regex or generator that produced it.
+  - Do not treat one giant compound command as final proof. After setup/build,
+    run separate acceptance checks for the exact paths, files, ports, outputs,
+    and cleanup state that the evaluator will inspect.
+  - Before finishing, check both required artifacts and absence of forbidden
+    leftovers such as compiled binaries or temp files in constrained delivery
+    directories.
+
+  The following information is returned:
+
+  Output: Combined stdout/stderr. Can be `(empty)` or partial on error and for
+  any unwaited background processes.
+
+  Exit Code: Only included if non-zero (command failed).
+
+  Error: Only included if a process-level error occurred (e.g., spawn failure).
+
+  Signal: Only included if process was terminated by a signal.
+
+  Background PIDs: Only included if background processes were started.
+
+  Process Group PGID: Only included if available.
+input_schema:
+  type: object
+  properties:
+    command:
+      type: string
+      description: Exact bash command to execute as `bash -c <command>`
+    description:
+      type: string
+      description: >-
+        Brief description of the command for the user. Be specific and concise.
+        Ideally a single sentence. Can be up to 3 sentences for clarity. No line
+        breaks.
+    is_background:
+      type: boolean
+      description: >-
+        (OPTIONAL) Set to true if this command should be run in the background
+        (e.g. for long-running servers or watchers). The command will be started,
+        allowed to run for a brief moment to check for immediate errors, and then
+        moved to the background. If not provided, defaults to false.
+    dir_path:
+      type: string
+      description: >-
+        (OPTIONAL) The path of the directory to run the command in. If not
+        provided, the project root directory is used. Must be a directory within
+        the workspace and must already exist.
+    timeout_ms:
+      type: integer
+      description: >-
+        (OPTIONAL) Foreground command timeout in milliseconds. Default is 300000
+        (5 minutes). Use shorter limits for probes and status checks; use
+        background execution instead of very long foreground waits when possible.
+  required:
+    - command
+  additionalProperties: false
+  $schema: http://json-schema.org/draft-07/schema#
