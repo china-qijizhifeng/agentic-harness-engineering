@@ -142,10 +142,10 @@ uv run python scripts/build_templates.py --dataset-dir /path/to/dataset task_a t
 
 ```bash
 # 通过 tmux 在后台运行单个实验
-./scripts/evolve.sh configs/experiments/exp-003-simple-code-gpt54.yaml
+./scripts/evolve.sh configs/experiments/exp-simple-code-gpt54.yaml
 
 # 启动并自动 attach 到日志流
-./scripts/evolve.sh --attach configs/experiments/exp-003-simple-code-gpt54.yaml
+./scripts/evolve.sh --attach configs/experiments/exp-simple-code-gpt54.yaml
 
 # 批量：启动 configs/experiments/ 下的所有实验
 ./scripts/evolve.sh --batch
@@ -305,7 +305,7 @@ agentic-harness-engineering/
 ./scripts/evolve.sh \
   --experiment 2026-04-10__23-20-14__gpt54 \
   --start-iteration 16 \
-  configs/experiments/exp-003-simple-code-gpt54.yaml
+  configs/experiments/exp-simple-code-gpt54.yaml
 ```
 
 **只跑 evolve_agent，不重新评估：**
@@ -314,7 +314,7 @@ agentic-harness-engineering/
 ./scripts/evolve.sh \
   --experiment <existing-exp-dir> \
   --skip-eval \
-  configs/experiments/exp-003-simple-code-gpt54.yaml
+  configs/experiments/exp-simple-code-gpt54.yaml
 ```
 
 ---

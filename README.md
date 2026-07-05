@@ -140,10 +140,10 @@ If your tasks pull from a private Docker registry, also export `DOCKER_REGISTRY_
 
 ```bash
 # Run a single experiment in the background via tmux
-./scripts/evolve.sh configs/experiments/exp-003-simple-code-gpt54.yaml
+./scripts/evolve.sh configs/experiments/exp-simple-code-gpt54.yaml
 
 # Launch and auto-attach to the log stream
-./scripts/evolve.sh --attach configs/experiments/exp-003-simple-code-gpt54.yaml
+./scripts/evolve.sh --attach configs/experiments/exp-simple-code-gpt54.yaml
 
 # Batch: launch every experiment under configs/experiments/
 ./scripts/evolve.sh --batch
@@ -303,7 +303,7 @@ A thin wrapper around `uv run python evolve.py` + tmux.
 ./scripts/evolve.sh \
   --experiment 2026-04-10__23-20-14__gpt54 \
   --start-iteration 16 \
-  configs/experiments/exp-003-simple-code-gpt54.yaml
+  configs/experiments/exp-simple-code-gpt54.yaml
 ```
 
 **Run only evolve_agent without re-running evaluation:**
@@ -312,7 +312,7 @@ A thin wrapper around `uv run python evolve.py` + tmux.
 ./scripts/evolve.sh \
   --experiment <existing-exp-dir> \
   --skip-eval \
-  configs/experiments/exp-003-simple-code-gpt54.yaml
+  configs/experiments/exp-simple-code-gpt54.yaml
 ```
 
 ---

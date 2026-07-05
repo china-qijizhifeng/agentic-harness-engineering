@@ -290,8 +290,9 @@ def get_assistant_from_openai_generation_output(output: Any) -> Optional[Dict[st
                     if isinstance(first_item, dict) and first_item.get("role") == "assistant":
                         return first_item
 
-        if "choices" in output:
-            first_choice = output["choices"][0]
+        choices = output.get("choices")
+        if isinstance(choices, list) and choices:
+            first_choice = choices[0]
             if isinstance(first_choice, dict):
                 message = first_choice.get("message")
                 if isinstance(message, dict) and message.get("role") == "assistant":
@@ -390,9 +391,12 @@ def is_tool_span(obs: Dict[str, Any]) -> bool:
 def _sort_key(obs: Dict[str, Any]) -> Any:
     for attr in ("startTime", "start_time", "createdAt", "created_at"):
         value = obs.get(attr)
-        if value is not None:
-            return value
-    return 0
+        if value is None:
+            continue
+        if isinstance(value, (int, float)) and not isinstance(value, bool):
+            return (1, value, "")
+        return (2, 0, str(value))
+    return (0, 0, "")
 
 
 def sort_observations(observations: List[Dict[str, Any]]) -> List[Dict[str, Any]]:

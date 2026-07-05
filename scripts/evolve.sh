@@ -24,16 +24,16 @@ usage() {
 
 示例:
   # 启动单个实验
-  ./scripts/evolve.sh configs/experiments/exp-003-gpt54.yaml
+  ./scripts/evolve.sh configs/experiments/exp-simple-code-gpt54.yaml
 
   # 恢复中断的实验，从第 16 轮继续
-  ./scripts/evolve.sh --experiment 2026-03-13__18-02-54__gpt54 --start-iteration 16 configs/experiments/exp-003-gpt54.yaml
+  ./scripts/evolve.sh --experiment 2026-03-13__18-02-54__gpt54 --start-iteration 16 configs/experiments/exp-simple-code-gpt54.yaml
 
   # 批量启动所有实验
   ./scripts/evolve.sh --batch
 
   # 启动后自动 attach
-  ./scripts/evolve.sh --attach configs/experiments/exp-003-gpt54.yaml
+  ./scripts/evolve.sh --attach configs/experiments/exp-simple-code-gpt54.yaml
 
 管理 tmux session:
   tmux ls                          # 查看所有 session
@@ -81,7 +81,7 @@ fi
 
 # --- 批量模式 ---
 if $BATCH_MODE; then
-    CONFIGS_DIR="$SCRIPT_DIR/configs/experiments"
+    CONFIGS_DIR="$PROJECT_ROOT/configs/experiments"
     if [[ ! -d "$CONFIGS_DIR" ]]; then
         echo "错误: 找不到配置目录 $CONFIGS_DIR"
         exit 1

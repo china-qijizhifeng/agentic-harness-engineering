@@ -2077,7 +2077,7 @@ def regenerate_scores_md(exp_dir: Path, data: dict | None = None) -> None:
         task_col_headers = " | ".join(f"{i}/{k}" for i in range(k, -1, -1)) + " | Exc"
         task_col_seps = " | ".join("---" for _ in range(k + 1)) + " | ---"
         lines = [
-            f"# {data['experiment']} Iteration Scores (k={k})\n",
+            f"# {data.get('experiment', '')} Iteration Scores (k={k})\n",
             f"| Iter | " + " | ".join(f"pass@{i}" for i in range(1, k + 1))
             + f" | Tasks | {task_col_headers}"
             + f" | Trials | Trial P | Trial F | Trial E | Time |",
@@ -2144,7 +2144,7 @@ def regenerate_scores_md(exp_dir: Path, data: dict | None = None) -> None:
         sep += " | ------|"
 
         lines = [
-            f"# {data['experiment']} Iteration Scores\n",
+            f"# {data.get('experiment', '')} Iteration Scores\n",
             header,
             sep,
         ]
@@ -4061,8 +4061,11 @@ def _run_explore_agent_standalone(config: dict, exp_dir: Path) -> None:
     """Run explore-agent standalone in skip_eval mode (synchronous)."""
     from agents.explore_agent.run import run_explore_agent, register_explore_agent_skills
 
+    agent_llm = get_llm_config(config, role="agent")
     evolve_llm = get_llm_config(config, role="evolve")
     ml_model = config.get("explore_agent", {}).get("model") or evolve_llm["model"]
+
+    set_llm_env(agent_llm)
     os.environ["EXPLORE_AGENT_MODEL"] = ml_model
     os.environ["EXPLORE_AGENT_WORK_DIR"] = str(exp_dir)
 
