@@ -2344,7 +2344,11 @@ def save_change_evaluation(exp_dir: Path, iteration: int, evaluation: dict) -> N
 # ---------------------------------------------------------------------------
 
 def load_best_ever(exp_dir: Path) -> dict | None:
-    """Load best-ever iteration info."""
+    """Load the cached best-ever info written by save_best_ever().
+
+    This is a rendered cache, not the source of truth: use
+    best_ever_from_scores() when the value drives a decision.
+    """
     best_path = exp_dir / "best_ever.json"
     if best_path.exists():
         return json.loads(best_path.read_text(encoding="utf-8"))
@@ -2358,12 +2362,49 @@ def save_best_ever(exp_dir: Path, best: dict) -> None:
         json.dump(best, f, ensure_ascii=False, indent=2)
 
 
+# Optional per-iteration fields carried through from iteration_scores.yaml.
+_BEST_EVER_DETAIL_FIELDS = ("k", "tasks", "trials", "pass_at")
+
+
+def best_ever_from_scores(exp_dir: Path, before_iteration: int | None = None) -> dict | None:
+    """Derive best-ever from the iteration_scores.yaml ledger.
+
+    iteration_scores.yaml is appended by the harness itself once per iteration
+    and is what --resume rebuilds best_ever.json from, so it is the authority
+    on which iteration scored best. Pass before_iteration to consider only
+    iterations strictly before it.
+    """
+    scores_path = exp_dir / "iteration_scores.yaml"
+    if not scores_path.exists():
+        return None
+    with open(scores_path, encoding="utf-8") as f:
+        data = yaml.safe_load(f) or {}
+    scores = data.get("scores", [])
+    if before_iteration is not None:
+        scores = [s for s in scores if s.get("iteration", 0) < before_iteration]
+    if not scores:
+        return None
+
+    def _rate(entry: dict) -> float:
+        return entry.get("pass_rate", entry.get("capability_rate", 0))
+
+    top = max(scores, key=_rate)
+    best = {"iteration": top["iteration"], "pass_rate": _rate(top)}
+    for field in _BEST_EVER_DETAIL_FIELDS:
+        if field in top:
+            best[field] = top[field]
+    return best
+
+
 def update_best_ever(exp_dir: Path, iteration: int, stats: dict) -> dict:
     """Update best-ever with current iteration, return latest best-ever info."""
-    current = load_best_ever(exp_dir)
+    # Compare against the score ledger rather than best_ever.json: the cache is
+    # written before the ledger entry for the same iteration (and lives in the
+    # evolve agent's sandbox root), so it can disagree with what was scored.
+    current = best_ever_from_scores(exp_dir, before_iteration=iteration)
     pass_rate = stats["pass_rate"]
 
-    if current is None or pass_rate > current.get("pass_rate", current.get("capability_rate", 0)):
+    if current is None or pass_rate > current["pass_rate"]:
         k = stats.get("k", 1)
         n_total = stats["n_pass"] + stats["n_fail"] + stats["n_exception"]
         best = {
@@ -2410,6 +2451,12 @@ def update_best_ever(exp_dir: Path, iteration: int, stats: dict) -> dict:
         print(f"[best] Updated best-ever: iteration {iteration}, pass rate {pass_rate:.1%}")
         return best
 
+    # Not an improvement: rewrite the cache from the ledger so a stale
+    # best_ever.json does not survive into the next iteration's prompt.
+    if load_best_ever(exp_dir) != current:
+        save_best_ever(exp_dir, current)
+        print(f"[best] Rebuilt best_ever.json from iteration_scores "
+              f"-> iteration {current['iteration']} ({current['pass_rate']:.1%})")
     return current
 
 
@@ -2526,25 +2573,9 @@ def rollback_experiment_metadata(exp_dir: Path, start_iteration: int) -> None:
     # -- best_ever.json -------------------------------------------------------
     best_path = exp_dir / "best_ever.json"
     if scores_path.exists():
-        with open(scores_path, encoding="utf-8") as f:
-            remaining = yaml.safe_load(f) or {}
-        remaining_scores = remaining.get("scores", [])
-        if remaining_scores:
-            best_score = max(remaining_scores, key=lambda s: s.get("pass_rate", 0))
-            best = {
-                "iteration": best_score["iteration"],
-                "pass_rate": best_score["pass_rate"],
-            }
-            if "k" in best_score:
-                best["k"] = best_score["k"]
-            if "tasks" in best_score:
-                best["tasks"] = best_score["tasks"]
-            if "trials" in best_score:
-                best["trials"] = best_score["trials"]
-            if "pass_at" in best_score:
-                best["pass_at"] = best_score["pass_at"]
-            with open(best_path, "w", encoding="utf-8") as f:
-                json.dump(best, f, ensure_ascii=False, indent=2)
+        best = best_ever_from_scores(exp_dir)
+        if best:
+            save_best_ever(exp_dir, best)
             print(f"[resume] Recalculated best_ever.json -> iteration {best['iteration']} ({best['pass_rate']:.1%})")
         elif best_path.exists():
             best_path.unlink()
