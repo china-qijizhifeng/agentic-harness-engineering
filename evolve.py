@@ -2352,10 +2352,18 @@ def load_best_ever(exp_dir: Path) -> dict | None:
 
 
 def save_best_ever(exp_dir: Path, best: dict) -> None:
-    """Persist best-ever iteration info."""
+    """Persist best-ever iteration info.
+
+    Write to a temp file and rename, so a crash mid-write leaves the previous
+    record intact instead of a truncated file.
+    """
     best_path = exp_dir / "best_ever.json"
-    with open(best_path, "w", encoding="utf-8") as f:
+    tmp_path = best_path.with_name(best_path.name + ".tmp")
+    with open(tmp_path, "w", encoding="utf-8") as f:
         json.dump(best, f, ensure_ascii=False, indent=2)
+        f.flush()
+        os.fsync(f.fileno())
+    os.replace(tmp_path, best_path)
 
 
 def update_best_ever(exp_dir: Path, iteration: int, stats: dict) -> dict:
@@ -2543,8 +2551,7 @@ def rollback_experiment_metadata(exp_dir: Path, start_iteration: int) -> None:
                 best["trials"] = best_score["trials"]
             if "pass_at" in best_score:
                 best["pass_at"] = best_score["pass_at"]
-            with open(best_path, "w", encoding="utf-8") as f:
-                json.dump(best, f, ensure_ascii=False, indent=2)
+            save_best_ever(exp_dir, best)
             print(f"[resume] Recalculated best_ever.json -> iteration {best['iteration']} ({best['pass_rate']:.1%})")
         elif best_path.exists():
             best_path.unlink()
