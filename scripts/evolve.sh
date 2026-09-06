@@ -101,7 +101,7 @@ if $BATCH_MODE; then
         cmd="export PATH="$HOME/.local/bin:$PATH" && cd '$PROJECT_ROOT' && uv run python evolve.py --config '$cfg'"
         tmux new-session -d -s "$sess" "$cmd"
         echo "[启动] $name -> tmux session '$sess'"
-        ((count++))
+        count=$((count + 1))
     done
 
     echo ""
