@@ -1,0 +1,9 @@
+[project]
+name = "ahe-parallel-search-example"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "nexau @ git+https://github.com/nex-agi/NexAU.git@v0.3.9",
+    # NexAU imports SQLAlchemy's async runtime, which requires greenlet.
+    "greenlet>=3.0",
+]
