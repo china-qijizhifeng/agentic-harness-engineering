@@ -297,6 +297,12 @@ A thin wrapper around `uv run python evolve.py` + tmux.
 
 ## Common scenarios
 
+**Try free web search and page fetching through MCP:**
+
+The [Parallel Search MCP example](examples/parallel_search/) uses NexAU's HTTP
+transport without a search API key. It includes a runnable search/fetch command
+and an optional coding-agent configuration snippet.
+
 **Resume an interrupted experiment from iteration 16:**
 
 ```bash
