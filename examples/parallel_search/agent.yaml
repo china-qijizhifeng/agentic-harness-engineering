@@ -1,0 +1,15 @@
+type: agent
+name: parallel_search_example
+system_prompt: "Use web_search to find sources and web_fetch to read them."
+# The smoke runner dispatches tools directly and does not invoke an LLM.
+llm_config:
+  model: unused
+  base_url: http://127.0.0.1:1
+  api_key: unused
+mcp_servers:
+  - name: parallel
+    type: http
+    url: https://search.parallel.ai/mcp
+    headers:
+      User-Agent: "agentic-harness-engineering/0.1.0 (Parallel Search MCP example)"
+    timeout: 60
