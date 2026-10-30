@@ -40,7 +40,7 @@
 
 AHE 建立在三层可观测性之上：
 
-- **组件可观测性 (Component observability)** —— [**NexAU**](https://github.com/nex-agi/NexAU.git) 把 harness 拆分为七个正交的文件级组件，每一项都纳入 git 追踪，因此每次修改都可审计、可回退。
+- **组件可观测性 (Component observability)** —— [**NexAU**](https://github.com/hzhua/nexau.git) 把 harness 拆分为七个正交的文件级组件，每一项都纳入 git 追踪，因此每次修改都可审计、可回退。
 - **经验可观测性 (Experience observability)** —— *Agent Debugger* 把 ~10M-token 的原始 trace 蒸馏成分层、可溯源的报告；优化器默认读 digest，但任何论断都可以下钻回某次 rollout 的原始 trace。
 - **决策可观测性 (Decision observability)** —— *Evolve Agent* 提出有证据支撑的修改、预测其影响，并由下一轮迭代中翻转的任务自动证伪。
 
@@ -74,12 +74,16 @@ sudo apt install -y tmux
 ### 1. 克隆 + 安装依赖
 
 ```bash
-git clone https://github.com/Curry09/agentic-harness-engineering.git
+git clone https://github.com/china-qijizhifeng/agentic-harness-engineering.git
 cd agentic-harness-engineering
 uv sync
 ```
 
 > `uv sync` 会安装 `pyproject.toml` 中声明的所有依赖。
+
+NexAU 固定使用 [0.4.1 源码快照 `28511d9`](https://github.com/hzhua/nexau/commit/28511d9f0362191a6c378fd441b2be55309a9e32)，主程序、调试器、沙箱模板和源码探索使用同一提交。升级已有 checkout 后，请运行 `uv sync`，并通过 `scripts/build_templates.py` 重建 E2B 模板；已有模板仍保留之前安装的依赖。
+
+升级后建议新建实验。如果需要续跑旧实验，请先把更新后的上下文压缩 middleware 合并到该实验的 `evolve_agent/` 副本，并更新已保存配置中 `explore_agent.code_sources.nexau` 的 URL 和 ref。已有实验的代码和配置快照会保留，拉取更新不会自动迁移它们。`USE_BP_E2B=False` 时，Harbor 适配器也会固定使用新版仓库安装沙箱依赖。
 
 ### 2. 配置环境变量
 
@@ -206,7 +210,7 @@ tmux kill-session -t <session>  # 终止
 |---|---|
 | `evolve.py` | 主循环编排器 |
 | `agents/code_agent_simple/` | 被评估和被演化的编码 agent |
-| `agents/evolve_agent/` | 执行改进步骤的元 agent（基于 [NexAU](https://github.com/nex-agi/NexAU.git) 框架构建） |
+| `agents/evolve_agent/` | 执行改进步骤的元 agent（基于 [NexAU](https://github.com/hzhua/nexau.git) 框架构建） |
 | `agents/explore_agent/` | 上游数据集 / 源码探索 agent |
 | `configs/` | `base.yaml`（共享默认值）+ `experiments/`（按实验覆盖） |
 | `scripts/` | tmux 启动脚本（`evolve.sh`、`evolve-resume.sh`） |

@@ -78,9 +78,9 @@ explore_agent:
   code_sources:
     nexau:
       type: git
-      url: "https://github.com/nex-agi/NexAU.git"
-      ref: "v0.3.9"
-      local_fallback: "../nexau"       # 如果本地已有，优先使用（跳过 clone）
+      url: "https://github.com/hzhua/nexau.git"
+      ref: "28511d9f0362191a6c378fd441b2be55309a9e32"
+      # local_fallback: "../nexau"     # 可选：本地源码会覆盖上面的固定版本
 
   # 知识来源：预给定 Web 页面（explore-agent 必须阅读）
   # 分为两类：环境文档 + 顶尖 coding agent 设计调研

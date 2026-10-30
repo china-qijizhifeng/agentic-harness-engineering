@@ -127,16 +127,15 @@ def prepare_code_sources(config: dict) -> dict[str, Path]:
             if not clone_dir.exists():
                 CODE_SOURCES_DIR.mkdir(parents=True, exist_ok=True)
                 print(f"[explore-agent] 正在 clone {name}@{ref}...")
-                subprocess.run(
-                    [
-                        "git", "clone", "--depth", "1",
-                        "--branch", ref,
-                        src_cfg["url"], str(clone_dir),
-                    ],
-                    check=True,
-                    capture_output=True,
-                    text=True,
-                )
+                with tempfile.TemporaryDirectory(prefix=f".{name}-", dir=CODE_SOURCES_DIR) as tmp:
+                    for command in [
+                        ["git", "init", tmp],
+                        ["git", "-C", tmp, "remote", "add", "origin", src_cfg["url"]],
+                        ["git", "-C", tmp, "fetch", "--depth", "1", "origin", ref],
+                        ["git", "-C", tmp, "checkout", "--detach", "FETCH_HEAD"],
+                    ]:
+                        subprocess.run(command, check=True, capture_output=True, text=True)
+                    Path(tmp).rename(clone_dir)
                 print(f"[explore-agent] 已 clone {name}@{ref} → {clone_dir}")
             else:
                 print(f"[explore-agent] 使用缓存 {name}@{ref} → {clone_dir}")

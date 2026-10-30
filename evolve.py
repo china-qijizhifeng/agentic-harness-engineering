@@ -408,13 +408,17 @@ def _build_harbor_cmd(config: dict, workspace_dir: Path, agent_config_filename: 
 
     cmd = [
         "harbor", "run",
-        "--agent", harbor_cfg["agent"],
         "--env", harbor_cfg["env"],
         "--model", model,
         "--n-concurrent", str(n_concurrent),
         "--ak", f"config_path={config_path}",
         "--jobs-dir", str(iteration_dir),
     ]
+
+    if harbor_cfg["agent"] == "nexau":
+        cmd.extend(["--agent-import-path", "agents.harbor_nexau:PinnedNexAU"])
+    else:
+        cmd.extend(["--agent", harbor_cfg["agent"]])
 
     if k > 1:
         cmd.extend(["-k", str(k)])
@@ -452,6 +456,10 @@ def launch_harbor(config: dict, workspace_dir: Path, agent_config_filename: str,
     llm_cfg = get_llm_config(config, role="agent")
 
     sub_env = os.environ.copy()
+    # Harbor runs from ROOT_DIR; make the checkout's custom agent importable.
+    sub_env["PYTHONPATH"] = os.pathsep.join(
+        str(path) for path in (PROJECT_DIR, sub_env.get("PYTHONPATH")) if path
+    )
     for cfg_key, env_key in [("api_key", "LLM_API_KEY"),
                              ("base_url", "LLM_BASE_URL"),
                              ("model", "LLM_MODEL")]:
