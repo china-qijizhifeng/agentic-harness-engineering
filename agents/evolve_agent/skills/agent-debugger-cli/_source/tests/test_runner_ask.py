@@ -24,7 +24,8 @@ def _scripted_agent(payload: dict):
     return fake_agent
 
 
-def test_ask_mode_happy_path(tmp_path, monkeypatch):
+@pytest.mark.parametrize("output_format", ["legacy", "direct", "double_encoded"])
+def test_ask_mode_happy_path(tmp_path, monkeypatch, output_format):
     monkeypatch.setenv("LLM_MODEL", "m")
     monkeypatch.setenv("LLM_BASE_URL", "u")
     monkeypatch.setenv("LLM_API_KEY", "k")
@@ -34,6 +35,9 @@ def test_ask_mode_happy_path(tmp_path, monkeypatch):
     (tmp_path / "evolve_agent" / "tools" / "__init__.py").write_text("")
 
     fake_agent = _scripted_agent({"mode": "ask", "answer": "42"})
+    if output_format != "legacy":
+        output = json.dumps({"mode": "ask", "answer": "42"})
+        fake_agent.run.return_value = json.dumps(output) if output_format == "double_encoded" else output
 
     with patch("agent_debugger_core.runtime.runner._build_agent", return_value=fake_agent):
         result = run_agent(

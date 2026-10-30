@@ -38,7 +38,7 @@
 
 AHE rests on three observability layers:
 
-- **Component observability** — [**NexAU**](https://github.com/nex-agi/NexAU.git) decomposes the harness into seven orthogonal, file-level components, each git-tracked so every edit is auditable and revertible.
+- **Component observability** — [**NexAU**](https://github.com/hzhua/nexau.git) decomposes the harness into seven orthogonal, file-level components, each git-tracked so every edit is auditable and revertible.
 - **Experience observability** — *Agent Debugger* distills ~10M-token raw traces into layered, sourced reports; the optimizer reads digests by default but can always drill back to any rollout's raw trace.
 - **Decision observability** — *Evolve Agent* proposes evidence-backed edits, predicts their impact, and is automatically falsified by the next iteration's flipped tasks.
 
@@ -72,12 +72,16 @@ sudo apt install -y tmux
 ### 1. Clone + install dependencies
 
 ```bash
-git clone https://github.com/Curry09/agentic-harness-engineering.git
+git clone https://github.com/china-qijizhifeng/agentic-harness-engineering.git
 cd agentic-harness-engineering
 uv sync
 ```
 
 > `uv sync` installs every dependency declared in `pyproject.toml`.
+
+NexAU is pinned to the [0.4.1 source snapshot `28511d9`](https://github.com/hzhua/nexau/commit/28511d9f0362191a6c378fd441b2be55309a9e32). The host, debugger, sandbox templates, and source explorer use this same revision. After upgrading an existing checkout, run `uv sync` and rebuild your E2B templates with `scripts/build_templates.py`; existing templates retain their previously installed packages.
+
+Start a new experiment after upgrading. To resume an older experiment, first merge the updated context-compaction middleware into its `evolve_agent/` copy and update its saved `explore_agent.code_sources.nexau` URL and ref. Existing experiment code and config snapshots are preserved, so pulling this update does not migrate them automatically. The Harbor adapter also pins on-demand installs when `USE_BP_E2B=False`.
 
 ### 2. Configure environment variables
 
@@ -204,7 +208,7 @@ Each `runs/iteration_NNN/` mixes two generations: `input/` holds the workspace p
 |---|---|
 | `evolve.py` | Main-loop orchestrator |
 | `agents/code_agent_simple/` | The coding agent that is being evaluated and evolved |
-| `agents/evolve_agent/` | The meta-agent that performs the improvement step (built on the [NexAU](https://github.com/nex-agi/NexAU.git) framework) |
+| `agents/evolve_agent/` | The meta-agent that performs the improvement step (built on the [NexAU](https://github.com/hzhua/nexau.git) framework) |
 | `agents/explore_agent/` | Upstream dataset / source-code exploration agent |
 | `configs/` | `base.yaml` (shared defaults) + `experiments/` (per-experiment overlays) |
 | `scripts/` | tmux launcher wrappers (`evolve.sh`, `evolve-resume.sh`) |

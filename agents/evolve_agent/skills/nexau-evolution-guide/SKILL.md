@@ -416,7 +416,7 @@ tracers:
 
 ## Reference Docs
 
-Detailed NexAU v0.3.9 documentation is available in `reference/`:
+The bundled `reference/` documents describe NexAU v0.3.9. This project now runs the pinned NexAU 0.4.1 snapshot; check the source explorer output for current APIs. For example, `messages_to_legacy_openai_chat` was replaced by `nexau.core.serializers.openai_chat.serialize_ump_to_openai_chat_payload`.
 
 | File | Content |
 |------|---------|

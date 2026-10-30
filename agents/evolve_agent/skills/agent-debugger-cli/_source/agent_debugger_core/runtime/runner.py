@@ -118,6 +118,10 @@ def _parse_run_output(run_output: Any) -> dict:
     else:
         raise RunnerError(f"agent.run() output is not a JSON object: {s[:200]}")
 
+    # NexAU 0.4.1 returns the stop tool's result directly.
+    if outer.get("mode") in ("ask", "check"):
+        return outer
+
     status = outer.get("status")
     if status != "TASK_COMPLETED" or not outer.get("task_completed"):
         raise RunnerError(

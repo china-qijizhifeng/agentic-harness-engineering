@@ -71,8 +71,8 @@ NEXAU_VENV = "/opt/nexau-venv"
 # host-side deps in pyproject.toml (host runs harbor-LJH; the sandbox runs
 # NexAU-harbor, the trimmed harbor variant meant for in-template execution).
 DEFAULT_NEXAU_PACKAGES = [
-    "git+https://github.com/Curry09/NexAU-harbor.git",
-    "git+https://github.com/nex-agi/NexAU.git@v0.3.9",
+    "git+https://github.com/Curry09/NexAU-harbor.git@981704263b98560071b1f7219d20dfdc64b98dba",
+    "git+https://github.com/hzhua/nexau.git@28511d9f0362191a6c378fd441b2be55309a9e32",
 ]
 
 

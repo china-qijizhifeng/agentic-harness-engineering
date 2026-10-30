@@ -24,7 +24,7 @@ from openai.types.chat import ChatCompletion
 
 from nexau.archs.llm.llm_config import LLMConfig
 from nexau.archs.main_sub.execution.llm_caller import LLMCaller
-from nexau.core.adapters.legacy import messages_to_legacy_openai_chat
+from nexau.core.serializers.openai_chat import serialize_ump_to_openai_chat_payload
 from nexau.core.messages import Message, Role, TextBlock, ToolUseBlock
 
 from nexau.archs.main_sub.utils.token_counter import TokenCounter
@@ -504,7 +504,7 @@ class SlidingWindowCompaction:
             ChatCompletion,
             self._summary_client.chat.completions.create(
                 model=self.summary_model,
-                messages=messages_to_legacy_openai_chat(llm_messages),
+                messages=serialize_ump_to_openai_chat_payload(llm_messages),
                 max_tokens=max_tokens,
             ),
         )

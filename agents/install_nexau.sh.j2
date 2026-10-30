@@ -1,0 +1,15 @@
+#!/bin/bash
+set -euo pipefail
+
+apt-get update
+apt-get install -y curl git build-essential tmux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+source "$HOME/.local/bin/env"
+
+export NEXAU_VENV="/opt/nexau-venv"
+mkdir -p /opt
+uv venv "$NEXAU_VENV" --python 3.13 --clear
+source "$NEXAU_VENV/bin/activate"
+uv pip install \
+    git+https://github.com/Curry09/NexAU-harbor.git@981704263b98560071b1f7219d20dfdc64b98dba \
+    git+https://github.com/hzhua/nexau.git@28511d9f0362191a6c378fd441b2be55309a9e32
